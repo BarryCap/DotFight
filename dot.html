@@ -1,0 +1,77 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="dot.css">
+    <script src="dot.js"></script>
+  </head>
+  <body>
+    <svg
+      viewBox="0 0 1280 1024"
+      width="1280"
+      height="1024"
+      fill="#fff"
+      oncontextmenu="return false"
+    >
+      <filter id="dot-disp">
+        <feTurbulence
+          type="fractalNoise"
+          baseFrequency=".01"
+          numOctaves="8"
+          result="fractal"
+        >
+          <animate
+            attributeName="seed"
+            values="1;1800"
+            dur="60"
+            repeatCount="indefinite"
+          />
+        </feTurbulence>
+        <feDisplacementMap
+          id="dot-disp-map"
+          in="SourceGraphic"
+          in2="fractal"
+          yChannelSelector="G"
+          scale="8"
+        />
+      </filter>
+      <filter id="evil-dot-disp">
+        <feTurbulence
+          type="fractalNoise"
+          baseFrequency=".1"
+          numOctaves="16"
+          result="fractal"
+        >
+          <animate
+            attributeName="seed"
+            values="1;1800"
+            dur="60"
+            repeatCount="indefinite"
+          />
+        </feTurbulence>
+        <feDisplacementMap
+          in="SourceGraphic"
+          in2="fractal"
+          yChannelSelector="G"
+          scale="8"
+        />
+      </filter>
+      <g id="evil-dots" filter="url(#evil-dot-disp)">
+        <circle r="1" cx="-100%" cy="-100%" />
+      </g>
+      <g filter="url(#dot-disp)">
+        <circle r="1" cx="-100%" cy="-100%" />
+        <circle id="dot" filter="drop-shadow(0 0 20px #8ff)" r="40" cx="50%" cy="50%" />
+        <text
+          id="count-down"
+          fill="#fff"
+          filter="drop-shadow(0 0 20px #8ff) drop-shadow(0 0 20px #8ff8)"
+          x="1222"
+          y="937"
+          text-anchor="end"
+          font-family="monospace"
+          font-size="80"
+          font-weight="1000"
+        ></text>
+      </g>
+    </svg>
+  </body>
+</html>

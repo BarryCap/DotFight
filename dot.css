@@ -1,0 +1,32 @@
+body {
+  background: #000 40px 20px url("dot-bg-dark.svg");
+  background-position: calc(50% - 40px) calc(50% + 40px);
+  cursor: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  text-align: center;
+  user-select: none;
+}
+svg {
+  background: #000 40px 20px url("dot-bg.svg");
+  background-position: calc(50% - 40px) calc(50% + 40px);
+  border-radius: 8px;
+}
+#dot, #evil-dots * {
+  transition: .1s;
+}
+.dead {
+  opacity: 0;
+  r: 80;
+}
+@keyframes count-down-fill {
+  0% { transform: translateX(0); }
+  95% { transform: translateX(0); }
+  100% { transform: translateX(21px); }
+}
+#count-down {
+  animation: count-down-fill 10s;
+  transform: translateX(21px);
+}

@@ -1,0 +1,82 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 1280 1024"
+  fill="#fff"
+  oncontextmenu="location.reload(); return false"
+>
+  <style>
+    svg {
+      background: #000 40px 20px url("dot-bg.svg");
+      background-position: calc(50% - 40px) calc(50% + 40px);
+    }
+    #dot {
+      transition: .1s;
+    }
+    #evil-dot {
+      fill: #f00;
+    }
+    .dead {
+      opacity: 0;
+      r: 60;
+    }
+  </style>
+  <script href="dot.js" />
+  <filter id="disp-dot">
+    <feTurbulence
+      type="fractalNoise"
+      baseFrequency=".01"
+      numOctaves="8"
+      result="fractal"
+    >
+      <animate
+        attributeName="seed"
+        values="1;1800"
+        dur="60"
+        repeatCount="indefinite"
+      />
+    </feTurbulence>
+    <feDisplacementMap
+      in="SourceGraphic"
+      in2="fractal"
+      yChannelSelector="G"
+      scale="8"
+    />
+  </filter>
+  <filter id="disp-evil-dot">
+    <feTurbulence
+      type="fractalNoise"
+      baseFrequency=".1"
+      numOctaves="16"
+      result="fractal"
+    >
+      <animate
+        attributeName="seed"
+        values="1;1800"
+        dur="60"
+        repeatCount="indefinite"
+      />
+    </feTurbulence>
+    <feDisplacementMap
+      in="SourceGraphic"
+      in2="fractal"
+      yChannelSelector="G"
+      scale="8"
+    />
+  </filter>
+  <g filter="url(#disp-dot)">
+    <circle r="1" cx="-100%" cy="-100%" />
+    <circle id="dot" filter="drop-shadow(0 0 20px #8ff)" r="40" cx="50%" cy="50%" transform="translate(0 0)" />
+  </g>
+  <g filter="url(#disp-evil-dot)">
+    <circle r="1" cx="-100%" cy="-100%" />
+    <circle id="evil-dot" filter="drop-shadow(0 0 20px #f00)" r="40" cx="50%" cy="50%" transform="translate(160 160)" />
+  </g>
+</svg>
+<!--BCAP 10:48 27/4/2022-->
+<!--BCAP 11:19 27/4/2022-->
+<!--BCAP 12:03 27/4/2022-->
+<!--BCAP 21:37 29/4/2022-->
+<!--BCAP 22:02 29/4/2022-->
+<!--BCAP 00:45 30/4/2022-->
+<!--BCAP 00:57 30/4/2022-->
+<!--BCAP 09:26 30/4/2022-->
