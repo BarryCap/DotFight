@@ -14,8 +14,11 @@ svg {
   background-position: calc(50% - 40px) calc(50% + 40px);
   border-radius: 8px;
 }
-#dot, #evil-dots * {
+#dot {
   transition: .1s;
+}
+#evil-dots * {
+  transition: .2s;
 }
 .dead {
   opacity: 0;

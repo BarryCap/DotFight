@@ -2,64 +2,69 @@ let dot = null
 let dotPos = [0, 0]
 let currentTime = 1
 
-const evilDots = [
-  {
-    pos: [-9, -7],
-    move: [1, 1],
-  },
-  {
-    pos: [-9, -7],
-    move: [1, 1],
-  },
-  {
-    pos: [0, -7],
-    move: [0, 1],
-  },
-  {
-    pos: [9, -7],
-    move: [-1, 1],
-  },
-  {
-    pos: [9, 0],
-    move: [-1, 0],
-  },
-  {
-    pos: [9, 7],
-    move: [-1, -1],
-  },
-  {
-    pos: [0, 7],
-    move: [0, -1],
-  },
-  {
-    pos: [-9, 7],
-    move: [1, -1],
-  },
-  {
-    pos: [-9, 0],
-    move: [1, 0],
-  },
-]
+const nbEvilDots = 8096
+let evilDots = []
 
 setTimeout(() => {
   dot = document.getElementById('dot')
   setTransform(dot, dotPos)
 })
 
-setTimeout(() => {
-  evilDots.forEach(({node, pos}, i) => {
+const createPos = () => {
+  if (Math.random() > 0.5) {
+    if (Math.random() > 0.5) {
+      return [-9, Math.floor((Math.random() * 15) - 7)]
+    } else {
+      return [9, Math.floor((Math.random() * 15) - 7)]
+    }
+  } else {
+    if (Math.random() > 0.5) {
+      return [Math.floor((Math.random() * 19) - 9), -7]
+    } else {
+      return [Math.floor((Math.random() * 19) - 9), 7]
+    }
+  }
+}
+const createMove = (pos) => {
+  let possibleMoves = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]]
+  if (pos[0] >= 7) {
+    possibleMoves = possibleMoves.filter((move) => !(move[0] >= 0))
+  } 
+  if (pos[0] <= -7) {
+    possibleMoves = possibleMoves.filter((move) => !(move[0] <= 0))
+  }
+  if (pos[1] >= 5) {
+    possibleMoves = possibleMoves.filter((move) => !(move[1] >= 0))
+  }
+  if (pos[1] <= -5) {
+    possibleMoves = possibleMoves.filter((move) => !(move[1] <= 0))
+  }
+  return possibleMoves[Math.floor(Math.random() * possibleMoves.length)]
+}
+let currentEvilDotIndex = 1
+let timeBeforeNew = 1000
+const create = () => {
+  if (currentEvilDotIndex <= nbEvilDots) {
     node = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
-    node.setAttribute('id', `evil-dot${i}`)
+    node.setAttribute('id', `evil-dot${currentEvilDotIndex}`)
     node.setAttribute('fill', '#f00')
     node.setAttribute('filter', 'drop-shadow(0 0 20 #f00)')
     node.setAttribute('r', 40)
     node.setAttribute('cx', '50%')
     node.setAttribute('cy', '50%')
     document.getElementById('evil-dots').appendChild(node)
+    const pos = createPos()
+    const move = createMove(pos)
     setTransform(node, pos)
-    evilDots[i].node = node
-  })
-})
+    evilDots.push({node, pos, move })
+    currentEvilDotIndex++
+    timeBeforeNew *= 0.99
+    console.log(timeBeforeNew)
+    setTimeout(create, timeBeforeNew)
+  }
+}
+
+setTimeout(create, timeBeforeNew)
 
 document.onkeydown = move
 
@@ -97,11 +102,18 @@ function checkCollision() {
 }
 
 setInterval(() => {
-  evilDots.forEach(({node, pos, move}) => {
+  const deadDots = []
+  evilDots.forEach(({node, pos, move}, index) => {
+    if (Math.abs(pos[0]) > 9 || Math.abs(pos[1]) > 7) {
+      document.getElementById('evil-dots').removeChild(node)
+      deadDots.push(index)
+      return
+    }
     pos[0] +=  move[0]
     pos[1] +=  move[1]
     setTransform(node, pos)
   })
+  evilDots = evilDots.filter((_,index) => !deadDots.includes(index))
   checkCollision()
 }, 400)
 
