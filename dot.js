@@ -59,7 +59,6 @@ const create = () => {
     evilDots.push({node, pos, move })
     currentEvilDotIndex++
     timeBeforeNew *= 0.99
-    console.log(timeBeforeNew)
     setTimeout(create, timeBeforeNew)
   }
 }
@@ -86,7 +85,6 @@ function move(e) {
   }
   setTransform(dot, dotPos)
   checkCollision()
-  console.log(dotPos)
 }
 
 function checkCollision() {
