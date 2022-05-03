@@ -7,6 +7,10 @@ let highScore = 0
 
 function launchGame() {
   $('menu').setAttribute('opacity', 0)
+  $('dot-disp-map').setAttribute('scale', 256)
+  setTimeout(() => {
+    $('dot-disp-map').setAttribute('scale', 8)
+  }, 200)
 
   let dot = null
   let dotPos = [0, 0]
@@ -102,6 +106,8 @@ function launchGame() {
   function checkCollision() {
     if (evilDots.some(({pos}) => dotPos[0] == pos[0] && dotPos[1] == pos[1])) {
       $('dot-disp-map').setAttribute('scale', 256)
+      $('last-score').innerHTML = lastScore
+      $('high-score').innerHTML = highScore
       setTimeout(() => {
         dot.classList.add('dead')
       }, 100)
@@ -121,9 +127,6 @@ function launchGame() {
 
         $('menu').setAttribute('opacity', 1)
         $('dot-disp-map').setAttribute('scale', 8)
-
-        $('last-score').innerHTML = lastScore
-        $('high-score').innerHTML = highScore
       }, 600)
     }
   }
