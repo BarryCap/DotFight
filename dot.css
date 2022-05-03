@@ -40,7 +40,7 @@ svg {
   95% { transform: translateX(0); }
   100% { transform: translateX(21px); }
 }
-#count-down {
+.count-down {
   animation: count-down-fill 10s;
   transform: translateX(21px);
 }

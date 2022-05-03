@@ -1,21 +1,20 @@
 function init() {
   document.getElementById('menu').setAttribute('opacity', 0)
-  setTimeout(() => {
-    document.getElementById('menu').remove()
-  }, 200)
 
   let dot = null
   let dotPos = [0, 0]
   let currentTime = 1
-  
+
   const nbEvilDots = 8096
+  let creationTimeout = null
   let evilDots = []
-  
+
   setTimeout(() => {
     dot = document.getElementById('dot')
     setTransform(dot, dotPos)
+    document.getElementById('count-down').classList.add('count-down')
   })
-  
+
   const createPos = () => {
     if (Math.random() > 0.5) {
       if (Math.random() > 0.5) {
@@ -65,7 +64,7 @@ function init() {
       evilDots.push({node, pos, move })
       currentEvilDotIndex++
       timeBeforeNew *= 0.99
-      setTimeout(create, timeBeforeNew)
+      creationTimeout = setTimeout(create, timeBeforeNew)
     }
   }
   
@@ -92,7 +91,7 @@ function init() {
     setTransform(dot, dotPos)
     checkCollision()
   }
-  
+
   function checkCollision() {
     if (evilDots.some(({pos}) => dotPos[0] == pos[0] && dotPos[1] == pos[1])) {
       document.getElementById('dot-disp-map').setAttribute('scale', 256)
@@ -100,12 +99,25 @@ function init() {
         dot.classList.add('dead')
       }, 100)
       setTimeout(() => {
-        location.reload()
+        clearInterval(evilDotsMove)
+        clearInterval(timerInterval)
+        clearTimeout(creationTimeout)
+        dotPos = [0, 0]
+        currentTime = 1
+        evilDots = []
+        document.getElementById('evil-dots').innerHTML = ''
+        document.getElementById('count-down').innerHTML = ''
+        dot.classList.remove('dead')
+        setTransform(dot, dotPos)
+        document.getElementById('count-down').classList.remove('count-down')
+
+        document.getElementById('menu').setAttribute('opacity', 1)
+        document.getElementById('dot-disp-map').setAttribute('scale', 8)
       }, 600)
     }
   }
-  
-  setInterval(() => {
+
+  const evilDotsMove = setInterval(() => {
     const deadDots = []
     evilDots.forEach(({node, pos, move}, index) => {
       if (Math.abs(pos[0]) > 9 || Math.abs(pos[1]) > 7) {
@@ -121,7 +133,7 @@ function init() {
     checkCollision()
   }, 400)
   
-  setInterval(() =>  {
+  const timerInterval = setInterval(() =>  {
     document.getElementById('count-down').innerHTML = currentTime++
   }, 1000)  
 }
