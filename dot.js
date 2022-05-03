@@ -6,9 +6,6 @@ let lastScore = 0
 let highScore = 0
 
 function launchGame() {
-  $('last-score').innerHTML = lastScore
-  $('high-score').innerHTML = highScore
-
   $('menu').setAttribute('opacity', 0)
 
   let dot = null
@@ -124,6 +121,9 @@ function launchGame() {
 
         $('menu').setAttribute('opacity', 1)
         $('dot-disp-map').setAttribute('scale', 8)
+
+        $('last-score').innerHTML = lastScore
+        $('high-score').innerHTML = highScore
       }, 600)
     }
   }
