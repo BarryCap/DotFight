@@ -1,3 +1,6 @@
+let lastScore = 0
+let highScore = 0
+
 function init() {
   document.getElementById('menu').setAttribute('opacity', 0)
 
@@ -103,6 +106,7 @@ function init() {
         clearInterval(timerInterval)
         clearTimeout(creationTimeout)
         dotPos = [0, 0]
+        lastScore = currentTime
         currentTime = 1
         evilDots = []
         document.getElementById('evil-dots').innerHTML = ''
@@ -135,5 +139,8 @@ function init() {
   
   const timerInterval = setInterval(() =>  {
     document.getElementById('count-down').innerHTML = currentTime++
-  }, 1000)  
+    if(currentTime > highScore) {
+      highScore = currentTime
+    }
+  }, 1000)
 }
