@@ -140,7 +140,7 @@ function launchGame() {
   function checkDistance() {
     evilDots.forEach(({feDisplacementMap, pos}) => {
       const distance = ((pos[0] - dotPos[0])**2 + (pos[1] - dotPos[1])**2)**0.5
-      feDisplacementMap.setAttribute('scale', 128 / distance)
+      feDisplacementMap.setAttribute('scale', 128 / (distance || .75))
     })
   }
 
