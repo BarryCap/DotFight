@@ -1,8 +1,15 @@
+function $(id) {
+  return document.getElementById(id)
+}
+
 let lastScore = 0
 let highScore = 0
 
-function init() {
-  document.getElementById('menu').setAttribute('opacity', 0)
+function launchGame() {
+  $('last-score').innerHTML = lastScore
+  $('high-score').innerHTML = highScore
+
+  $('menu').setAttribute('opacity', 0)
 
   let dot = null
   let dotPos = [0, 0]
@@ -13,9 +20,9 @@ function init() {
   let evilDots = []
 
   setTimeout(() => {
-    dot = document.getElementById('dot')
+    dot = $('dot')
     setTransform(dot, dotPos)
-    document.getElementById('count-down').classList.add('count-down')
+    $('count-down').classList.add('count-down')
   })
 
   const createPos = () => {
@@ -60,7 +67,7 @@ function init() {
       node.setAttribute('r', 40)
       node.setAttribute('cx', '50%')
       node.setAttribute('cy', '50%')
-      document.getElementById('evil-dots').appendChild(node)
+      $('evil-dots').appendChild(node)
       const pos = createPos()
       const move = createMove(pos)
       setTransform(node, pos)
@@ -97,7 +104,7 @@ function init() {
 
   function checkCollision() {
     if (evilDots.some(({pos}) => dotPos[0] == pos[0] && dotPos[1] == pos[1])) {
-      document.getElementById('dot-disp-map').setAttribute('scale', 256)
+      $('dot-disp-map').setAttribute('scale', 256)
       setTimeout(() => {
         dot.classList.add('dead')
       }, 100)
@@ -109,14 +116,14 @@ function init() {
         lastScore = currentTime
         currentTime = 1
         evilDots = []
-        document.getElementById('evil-dots').innerHTML = ''
-        document.getElementById('count-down').innerHTML = ''
+        $('evil-dots').innerHTML = ''
+        $('count-down').innerHTML = ''
         dot.classList.remove('dead')
         setTransform(dot, dotPos)
-        document.getElementById('count-down').classList.remove('count-down')
+        $('count-down').classList.remove('count-down')
 
-        document.getElementById('menu').setAttribute('opacity', 1)
-        document.getElementById('dot-disp-map').setAttribute('scale', 8)
+        $('menu').setAttribute('opacity', 1)
+        $('dot-disp-map').setAttribute('scale', 8)
       }, 600)
     }
   }
@@ -125,7 +132,7 @@ function init() {
     const deadDots = []
     evilDots.forEach(({node, pos, move}, index) => {
       if (Math.abs(pos[0]) > 9 || Math.abs(pos[1]) > 7) {
-        document.getElementById('evil-dots').removeChild(node)
+        $('evil-dots').removeChild(node)
         deadDots.push(index)
         return
       }
@@ -138,7 +145,7 @@ function init() {
   }, 400)
   
   const timerInterval = setInterval(() =>  {
-    document.getElementById('count-down').innerHTML = currentTime++
+    $('count-down').innerHTML = currentTime++
     if(currentTime > highScore) {
       highScore = currentTime
     }
