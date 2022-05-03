@@ -94,18 +94,27 @@ function launchGame() {
 
       $('evil-dots-filters').appendChild(filter)
 
+      const evilDotG = document.createElementNS('http://www.w3.org/2000/svg', 'g')
+
+      const effectFixer = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+      evilDotG.appendChild(effectFixer)
+      effectFixer.setAttribute('r', '1')
+      effectFixer.setAttribute('cx', '-100%')
+      effectFixer.setAttribute('cy', '-100%')
+
       node = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+      evilDotG.appendChild(node)
       node.setAttribute('id', `evil-dot${currentEvilDotIndex}`)
       node.setAttribute('fill', '#f00')
-      node.setAttribute('filter', `drop-shadow(0 0 20 #f00) url(#evil-dot-disp${currentEvilDotIndex})`)
+      evilDotG.setAttribute('filter', `drop-shadow(0 0 20 #f00) url(#evil-dot-disp${currentEvilDotIndex})`)
       node.setAttribute('r', 40)
       node.setAttribute('cx', '50%')
       node.setAttribute('cy', '50%')
-      $('evil-dots').appendChild(node)
+      $('evil-dots').appendChild(evilDotG)
       const pos = createPos()
       const move = createMove(pos)
       setTransform(node, pos)
-      evilDots.push({node, pos, move, feDisplacementMap})
+      evilDots.push({node, pos, group: evilDotG, move, feDisplacementMap})
       currentEvilDotIndex++
       timeBeforeNew *= 0.99
       creationTimeout = setTimeout(create, timeBeforeNew)
@@ -175,9 +184,9 @@ function launchGame() {
 
   const evilDotsMove = setInterval(() => {
     const deadDots = []
-    evilDots.forEach(({node, pos, move}, index) => {
+    evilDots.forEach(({node, group, pos, move}, index) => {
       if (Math.abs(pos[0]) > 9 || Math.abs(pos[1]) > 7) {
-        $('evil-dots').removeChild(node)
+        $('evil-dots').removeChild(group)
         deadDots.push(index)
         return
       }
