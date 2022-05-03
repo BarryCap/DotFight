@@ -1,9 +1,9 @@
+let lastScore = 0
+let highScore = 0
+
 function $(id) {
   return document.getElementById(id)
 }
-
-let lastScore = 0
-let highScore = 0
 
 function launchGame() {
   $('menu').setAttribute('opacity', 0)
@@ -78,7 +78,7 @@ function launchGame() {
       creationTimeout = setTimeout(create, timeBeforeNew)
     }
   }
-  
+
   setTimeout(create, timeBeforeNew)
   
   document.onkeydown = move
@@ -86,7 +86,7 @@ function launchGame() {
   function setTransform(node, [x, y]) {
     node.setAttribute('transform', `translate(${x*80} ${y*80})`)
   }
-  
+
   function move(e) {
     e = e || window.event
     if ((e.key == 'z' || e.key == 'ArrowUp') && dotPos[1] >= -5) {
@@ -146,7 +146,7 @@ function launchGame() {
     evilDots = evilDots.filter((_,index) => !deadDots.includes(index))
     checkCollision()
   }, 400)
-  
+
   const timerInterval = setInterval(() =>  {
     $('count-down').innerHTML = currentTime++
     if(currentTime > highScore) {

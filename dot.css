@@ -19,7 +19,6 @@ svg {
 
 #menu {
   position: absolute;
-  cursor: default;
   outline: solid 4px #333;
   transition: .2s;
 }
