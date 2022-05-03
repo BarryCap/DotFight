@@ -1,8 +1,16 @@
-let lastScore = 0
 let highScore = 0
 
 function $(id) {
   return document.getElementById(id)
+}
+
+document.onkeydown = launch
+
+function launch(e) {
+  if (e.key == ' ' || e.key == 'Enter') {
+    console.log('bulb')
+    launchGame()
+  }
 }
 
 function launchGame() {
@@ -14,7 +22,7 @@ function launchGame() {
 
   let dot = null
   let dotPos = [0, 0]
-  let currentTime = 1
+  let currentTime = 0
 
   const nbEvilDots = 8096
   let creationTimeout = null
@@ -106,7 +114,7 @@ function launchGame() {
   function checkCollision() {
     if (evilDots.some(({pos}) => dotPos[0] == pos[0] && dotPos[1] == pos[1])) {
       $('dot-disp-map').setAttribute('scale', 256)
-      $('last-score').innerHTML = lastScore
+      $('last-score').innerHTML = currentTime
       $('high-score').innerHTML = highScore
       setTimeout(() => {
         dot.classList.add('dead')
@@ -116,8 +124,7 @@ function launchGame() {
         clearInterval(timerInterval)
         clearTimeout(creationTimeout)
         dotPos = [0, 0]
-        lastScore = currentTime
-        currentTime = 1
+        currentTime = 0
         evilDots = []
         $('evil-dots').innerHTML = ''
         $('count-down').innerHTML = ''
@@ -125,6 +132,7 @@ function launchGame() {
         setTransform(dot, dotPos)
         $('count-down').classList.remove('count-down')
 
+        document.onkeydown = launch
         $('menu').setAttribute('opacity', 1)
         $('dot-disp-map').setAttribute('scale', 8)
       }, 600)
@@ -148,7 +156,7 @@ function launchGame() {
   }, 400)
 
   const timerInterval = setInterval(() =>  {
-    $('count-down').innerHTML = currentTime++
+    $('count-down').innerHTML = ++currentTime
     if(currentTime > highScore) {
       highScore = currentTime
     }
