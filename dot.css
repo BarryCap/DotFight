@@ -6,8 +6,8 @@ body {
   align-items: center;
   justify-content: center;
   margin: 0;
-  text-align: center;
   user-select: none;
+  height: 100vh;
 }
 svg {
   background: #000 40px 20px url("dot-bg.svg");
