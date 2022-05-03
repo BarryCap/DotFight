@@ -11,5 +11,5 @@ This is an SVG/HTML/CSS/JS project, same as most of my recent ones.
 
 ## How to run the game
 - [Download all project files](https://github.com/BarryCap/DotFight/archive/refs/heads/main.zip)
-- Unzip folder
+- Extract folder from ZIP
 - Launch `dot.html` in a recent chromium-based browser (such as Chrome)
