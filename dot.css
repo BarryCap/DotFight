@@ -13,7 +13,17 @@ svg {
   background: #000 40px 20px url("dot-bg.svg");
   background-position: calc(50% - 40px) calc(50% + 40px);
   border-radius: 8px;
+  width: 1280px;
+  height: 1024px;
 }
+
+#menu {
+  position: absolute;
+  cursor: default;
+  outline: solid 4px #333;
+  transition: .2s;
+}
+
 #dot {
   transition: .1s;
 }
@@ -24,6 +34,7 @@ svg {
   opacity: 0;
   r: 80;
 }
+
 @keyframes count-down-fill {
   0% { transform: translateX(0); }
   95% { transform: translateX(0); }
