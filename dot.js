@@ -8,7 +8,6 @@ document.onkeydown = launch
 
 function launch(e) {
   if (e.key == ' ' || e.key == 'Enter') {
-    console.log('bulb')
     launchGame()
   }
 }
