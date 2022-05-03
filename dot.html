@@ -56,7 +56,7 @@
         <feTurbulence
           type="fractalNoise"
           baseFrequency=".01"
-          numOctaves="8"
+          numOctaves="16"
           result="fractal"
         >
           <animate
@@ -74,28 +74,8 @@
           scale="8"
         />
       </filter>
-      <filter id="evil-dot-disp">
-        <feTurbulence
-          type="fractalNoise"
-          baseFrequency=".1"
-          numOctaves="16"
-          result="fractal"
-        >
-          <animate
-            attributeName="seed"
-            values="1;1800"
-            dur="60"
-            repeatCount="indefinite"
-          />
-        </feTurbulence>
-        <feDisplacementMap
-          in="SourceGraphic"
-          in2="fractal"
-          yChannelSelector="G"
-          scale="8"
-        />
-      </filter>
-      <g id="evil-dots" filter="url(#evil-dot-disp)">
+      <g id="evil-dots-filters"></g>
+      <g id="evil-dots">
         <circle r="1" cx="-100%" cy="-100%" />
       </g>
       <g filter="url(#dot-disp)">

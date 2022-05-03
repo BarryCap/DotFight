@@ -68,10 +68,36 @@ function launchGame() {
   let timeBeforeNew = 1000
   const create = () => {
     if (currentEvilDotIndex <= nbEvilDots) {
+      const filter = document.createElementNS('http://www.w3.org/2000/svg', 'filter')
+      filter.setAttribute('id', `evil-dot-disp${currentEvilDotIndex}`)
+
+      const feTurbulence = document.createElementNS('http://www.w3.org/2000/svg', 'feTurbulence')
+      filter.appendChild(feTurbulence)
+      feTurbulence.setAttribute('type', 'fractalNoise')
+      feTurbulence.setAttribute('baseFrequency', '.1')
+      feTurbulence.setAttribute('numOctaves', '16')
+      feTurbulence.setAttribute('result', 'fractal')
+
+      const animateTurbulence = document.createElementNS('http://www.w3.org/2000/svg', 'animate')
+      feTurbulence.appendChild(animateTurbulence)
+      animateTurbulence.setAttribute('attributeName', 'seed')
+      animateTurbulence.setAttribute('values', '1;1800')
+      animateTurbulence.setAttribute('dur', '60')
+      animateTurbulence.setAttribute('repeatCount', 'indefinite')
+
+      const feDisplacementMap = document.createElementNS('http://www.w3.org/2000/svg', 'feDisplacementMap')
+      filter.appendChild(feDisplacementMap)
+      feDisplacementMap.setAttribute('in', 'SourceGraphic')
+      feDisplacementMap.setAttribute('in2', 'fractal')
+      feDisplacementMap.setAttribute('yChannelSelector', 'G')
+      feDisplacementMap.setAttribute('scale', '8')
+
+      $('evil-dots-filters').appendChild(filter)
+
       node = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
       node.setAttribute('id', `evil-dot${currentEvilDotIndex}`)
       node.setAttribute('fill', '#f00')
-      node.setAttribute('filter', 'drop-shadow(0 0 20 #f00)')
+      node.setAttribute('filter', `drop-shadow(0 0 20 #f00) url(#evil-dot-disp${currentEvilDotIndex})`)
       node.setAttribute('r', 40)
       node.setAttribute('cx', '50%')
       node.setAttribute('cy', '50%')
@@ -79,7 +105,7 @@ function launchGame() {
       const pos = createPos()
       const move = createMove(pos)
       setTransform(node, pos)
-      evilDots.push({node, pos, move })
+      evilDots.push({node, pos, move, feDisplacementMap})
       currentEvilDotIndex++
       timeBeforeNew *= 0.99
       creationTimeout = setTimeout(create, timeBeforeNew)
@@ -108,6 +134,14 @@ function launchGame() {
     }
     setTransform(dot, dotPos)
     checkCollision()
+    checkDistance()
+  }
+
+  function checkDistance() {
+    evilDots.forEach(({feDisplacementMap, pos}) => {
+      const distance = ((pos[0] - dotPos[0])**2 + (pos[1] - dotPos[1])**2)**0.5
+      feDisplacementMap.setAttribute('scale', 128 / distance)
+    })
   }
 
   function checkCollision() {
@@ -127,6 +161,7 @@ function launchGame() {
         evilDots = []
         $('evil-dots').innerHTML = ''
         $('count-down').innerHTML = ''
+        $('evil-dots-filters').innerHTML = ''
         dot.classList.remove('dead')
         setTransform(dot, dotPos)
         $('count-down').classList.remove('count-down')
@@ -152,6 +187,7 @@ function launchGame() {
     })
     evilDots = evilDots.filter((_,index) => !deadDots.includes(index))
     checkCollision()
+    checkDistance()
   }, 400)
 
   const timerInterval = setInterval(() =>  {
