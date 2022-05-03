@@ -6,3 +6,5 @@ DotFight is an action infinite game where the player controls **Dot**, a cute li
 I made this project thanks to [Archibald Perez](https://github.com/Archibald-Perez), who has been a great help making the project work and be as great as it is.
 
 The project wasn’t on GitHub at first (started on the 27<sup>th</sup> of April 2022), but we decided quite early to push it on the platform.
+
+This is an SVG/HTML/CSS/JS project, same as most of my recent ones.
