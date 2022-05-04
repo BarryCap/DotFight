@@ -1,13 +1,11 @@
 body {
-  background: #000 40px 20px url("dot-bg-dark.svg");
-  background-position: calc(50% - 40px) calc(50% + 40px);
+  background: #000 calc(50% - 40px) 20px url("dot-bg-dark.svg");
+  background-size: 160px;
   cursor: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  text-align: center;
   margin: 0;
+  margin-top: calc(50vh - 512px);
   user-select: none;
-  height: 100vh;
 }
 svg {
   background: #000 40px 20px url("dot-bg.svg");
@@ -19,8 +17,8 @@ svg {
 }
 
 #menu {
-  position: absolute;
   outline: solid 4px #333;
+  position: absolute;
   transition: .2s;
 }
 
@@ -44,3 +42,11 @@ svg {
   animation: count-down-fill 10s;
   transform: translateX(21px);
 }
+
+@media screen and (max-width: 1279px) { body { zoom: .875; } }
+@media screen and (max-width: 1119px) { body { zoom: .75; } }
+@media screen and (max-width: 959px) { body { zoom: .625; } }
+@media screen and (max-width: 799px) { body { zoom: .5; } }
+@media screen and (max-width: 639px) { body { zoom: .375; } }
+@media screen and (max-width: 479px) { body { zoom: .25; } }
+@media screen and (max-width: 319px) { body { zoom: .125; } }
