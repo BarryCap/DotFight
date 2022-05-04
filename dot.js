@@ -131,12 +131,12 @@ function launchGame() {
 
   function move(e) {
     e = e || window.event
-    if ((e.key == 'z' || e.key == 'ArrowUp') && dotPos[1] >= -5) {
+    if ((e.key == 'w' || e.key == 'z' || e.key == 'ArrowUp') && dotPos[1] >= -5) {
       dotPos[1] -=  1
       setTransform(dot, dotPos)
     } else if ((e.key == 's' || e.key == 'ArrowDown') && dotPos[1] <= 5) {
       dotPos[1] +=  1
-    } else if ((e.key == 'q' || e.key == 'ArrowLeft') && dotPos[0] >= -7) {
+    } else if ((e.key == 'a' || e.key == 'q' || e.key == 'ArrowLeft') && dotPos[0] >= -7) {
       dotPos[0] -=  1
     } else if ((e.key == 'd' || e.key == 'ArrowRight') && dotPos[0] <= 7) {
       dotPos[0] +=  1
