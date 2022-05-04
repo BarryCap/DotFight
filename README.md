@@ -12,4 +12,7 @@ This is an SVG/HTML/CSS/JS project, same as most of my recent ones.
 ## How to run the game
 - [Download all project files](https://github.com/BarryCap/DotFight/archive/refs/heads/main.zip)
 - Extract folder from ZIP
-- Launch `dot.html` in a recent chromium-based browser (such as Chrome)
+- Launch `dot.html` in a recent chromium-based browser (such as Chrome).
+
+**Note** :
+The game works best in full screen (<kbd>F11</kbd>) with a screen resolution higher than 1280 × 1024. If you have a lower screen resolution, you can zoom out to fit the game board.
