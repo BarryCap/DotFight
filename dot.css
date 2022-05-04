@@ -13,6 +13,7 @@ svg {
   background: #000 40px 20px url("dot-bg.svg");
   background-position: calc(50% - 40px) calc(50% + 40px);
   border-radius: 8px;
+  fill: #fff;
   width: 1280px;
   height: 1024px;
 }
@@ -23,10 +24,10 @@ svg {
   transition: .2s;
 }
 
-#dot {
+#dot, #dot1, #dot2 {
   transition: .1s;
 }
-#evil-dots * {
+#evil-dots *, #menu-selection {
   transition: .2s;
 }
 .dead {
