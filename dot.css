@@ -15,6 +15,8 @@ svg {
   fill: #fff;
   width: 1280px;
   height: 1024px;
+  font-family: consolas, monospace;
+  font-weight: bold;
 }
 
 #menu {
@@ -26,7 +28,15 @@ svg {
 #dot, #dot1, #dot2 {
   transition: .1s;
 }
-#evil-dots *, #menu-selection {
+#evil-dots *,
+#menu-selection,
+#hyphen,
+#left-menu-title,
+#right-menu-title,
+#last-score,
+#high-score,
+#p1-score,
+#p2-score {
   transition: .2s;
 }
 .dead {

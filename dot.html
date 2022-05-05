@@ -32,9 +32,7 @@
       <rect width="100%" height="100%" fill="#0008" />
       <g
         filter="drop-shadow(0 0 20px #8ffc) url(#dot-disp)"
-        font-family="monospace"
         font-size="40"
-        font-weight="1000"
       >
         <circle r="1" cx="-100%" cy="-100%" />
         <path
@@ -44,7 +42,14 @@
           stroke-width="4"
           d="m2 2h4a4 4 90 014 4v8a4 4 0 01-4 4h-4zm16 4a4 4 0 018 0v8a4 4 0 01-8 0zm14-4h12m-6 0v18m12 0v-18h10m-10 8h6m10-10v20m12-10h4v4a4 4 0 01-8 0v-8a4 4 0 018 0m8-6v20m0-10h8m0-10v20m6-18h12m-6 0v18"
         />
-        <text x="520" y="463" text-anchor="end">Last score</text>
+        <text
+          id="left-menu-title"
+          x="520"
+          y="463"
+          text-anchor="end"
+        >
+          Last score
+        </text>
         <text
           id="last-score"
           x="528"
@@ -52,31 +57,45 @@
           font-size="160"
           text-anchor="end"
         >
-        --
+          --
         </text>
-        <text x="760" y="463">High score</text>
+        <text
+          id="right-menu-title"
+          x="760"
+          y="463"
+        >
+          High score
+        </text>
         <text
           id="high-score"
           x="752"
           y="603"
           font-size="160"
         >
-        --
+          --
         </text>
+        <rect
+          id="hyphen"
+          width="160"
+          height="20"
+          x="560"
+          y="542"
+          opacity="0"
+        />
         <text
           x="448"
           y="843"
           font-size="160"
           text-anchor="end"
         >
-        1P
+          1P
         </text>
         <text
           x="832"
           y="843"
           font-size="160"
         >
-        2P
+          2P
         </text>
         <rect
           id="menu-selection"
@@ -90,6 +109,29 @@
           stroke-width="16"
         />
       </g>
+      <text
+        id="p1-score"
+        x="528"
+        y="603"
+        fill="#ff0"
+        filter="drop-shadow(0 0 20px #ff0) url(#dot-disp)"
+        font-size="160"
+        text-anchor="end"
+        opacity="0"
+      >
+        --
+      </text>
+      <text
+        id="p2-score"
+        x="752"
+        y="603"
+        fill="#0ff"
+        filter="drop-shadow(0 0 20px #0ff) url(#dot-disp)"
+        font-size="160"
+        opacity="0"
+      >
+        --
+      </text>
     </svg>
     <svg viewBox="0 0 1280 1024">
       <g id="evil-dots-filters"></g>
@@ -125,9 +167,7 @@
           x="1222"
           y="937"
           text-anchor="end"
-          font-family="monospace"
           font-size="80"
-          font-weight="1000"
         />
       </g>
     </svg>
