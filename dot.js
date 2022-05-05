@@ -9,7 +9,7 @@ document.addEventListener('keydown', menuSelection, false)
 document.addEventListener('keydown', launch, false)
 
 function menuSelection(e) {
-  if (e.key == 'a' || e.key == 'q' || e.key == 'd' || e.key == 'ArrowLeft' || e.key == 'ArrowRight') {
+  if (e.key == 'a' || e.key == 'q' || e.key == 'd' || e.key == 'ArrowLeft' || e.key == 'ArrowRight' || e.key == 'Tab') {
     $('menu-selection').setAttribute('x', twoPlayers? 240:800)
     $('hyphen').setAttribute('opacity', twoPlayers? 0:1)
     $('left-menu-title').setAttribute('opacity', twoPlayers? 1:0)
