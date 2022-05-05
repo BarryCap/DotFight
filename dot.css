@@ -39,6 +39,7 @@ svg {
 #p2-score {
   transition: .2s;
 }
+
 .dead {
   opacity: 0;
   r: 80;

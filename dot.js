@@ -319,9 +319,9 @@ function launchGame2p() {
   }
 
   setTimeout(create, timeBeforeNew)
-  
+
   document.onkeydown = move
-  
+
   function setTransform(node, [x, y]) {
     node.setAttribute('transform', `translate(${x*80} ${y*80})`)
   }
@@ -356,7 +356,7 @@ function launchGame2p() {
 
   function checkDistance() {
     evilDots.forEach(({feDisplacementMap, pos}) => {
-      const distance = ((pos[0] - dot1Pos[0])**2 + (pos[1] - dot1Pos[1])**2)**0.5
+      const distance = ((pos[0] - dot1Pos[0]) ** 2 + (pos[1] - dot1Pos[1]) ** 2) ** .5
       feDisplacementMap.setAttribute('scale', 128 / (distance || .75))
     })
   }
@@ -368,16 +368,20 @@ function launchGame2p() {
         dot1.classList.add('dead')
       }, 100)
     }
-    if (evilDots.some(({pos}) => dot1Pos[0] == pos[0] && dot1Pos[1] == pos[1])) {
+    if (evilDots.some(({pos}) => dot2Pos[0] == pos[0] && dot2Pos[1] == pos[1])) {
       dot2Dead = true
       setTimeout(() => {
         dot2.classList.add('dead')
       }, 100)
     }
+    if (dot1Dead) {
+      $('p1-score').innerHTML = currentTime
+    }
+    if (dot2Dead) {
+      $('p2-score').innerHTML = currentTime
+    }
     if (dot1Dead && dot2Dead) {
       $('dot-disp-map').setAttribute('scale', 256)
-      $('last-score').innerHTML = currentTime
-      $('high-score').innerHTML = highScore
 
       setTimeout(() => {
         clearInterval(evilDotsMove)

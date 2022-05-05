@@ -34,7 +34,6 @@
         filter="drop-shadow(0 0 20px #8ffc) url(#dot-disp)"
         font-size="40"
       >
-        <circle r="1" cx="-100%" cy="-100%" />
         <path
           transform="scale(8) translate(22 19)"
           fill="none"
@@ -109,29 +108,33 @@
           stroke-width="16"
         />
       </g>
-      <text
-        id="p1-score"
-        x="528"
-        y="603"
-        fill="#ff0"
-        filter="drop-shadow(0 0 20px #ff0) url(#dot-disp)"
-        font-size="160"
-        text-anchor="end"
-        opacity="0"
-      >
-        --
-      </text>
-      <text
-        id="p2-score"
-        x="752"
-        y="603"
-        fill="#0ff"
-        filter="drop-shadow(0 0 20px #0ff) url(#dot-disp)"
-        font-size="160"
-        opacity="0"
-      >
-        --
-      </text>
+      <g filter="drop-shadow(0 0 20px #ff0) url(#dot-disp)">
+        <circle r="1" cx="-100%" cy="-100%" />
+        <text
+          id="p1-score"
+          x="528"
+          y="603"
+          fill="#ff0"
+          font-size="160"
+          text-anchor="end"
+          opacity="0"
+        >
+          --
+        </text>
+      </g>
+      <g filter="drop-shadow(0 0 20px #0ff) url(#dot-disp)">
+        <circle r="1" cx="-100%" cy="-100%" />
+        <text
+          id="p2-score"
+          x="752"
+          y="603"
+          fill="#0ff"
+          font-size="160"
+          opacity="0"
+        >
+          --
+        </text>
+      </g>
     </svg>
     <svg viewBox="0 0 1280 1024">
       <g id="evil-dots-filters"></g>
