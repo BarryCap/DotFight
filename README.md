@@ -1,7 +1,7 @@
 # DotFight
 DotFight is an action infinite game where the player controls **Dot**, a cute little white circle who has to survive an attack of **evil dots**, many, many dull red circles.
 
-![DotFight logo](https://user-images.githubusercontent.com/63713811/166318393-67b99b13-ca9d-4543-ab7f-2d7cfaebf94b.png)
+https://user-images.githubusercontent.com/63713811/167210381-09d27c29-1888-4ee6-958b-5e5f57119a59.mp4
 
 I made this project thanks to [Archibald Perez](https://github.com/Archibald-Perez), who has been a great help making the project work and be as great as it is.
 
