@@ -1,15 +1,79 @@
+/** Technical constants */
+const scaleFactor = 80
+const dispScaleFromDistance = (dist) => 128 / (dist || .75)
+
+/** Game constants */
+const nbEvilDots = 8096
+const initDotPosX = 0
+const initDotPosY = 0
+const initDot1PosX = -2
+const initDot1PosY = 0
+const initDot2PosX = 2
+const initDot2PosY = 0
+const initTimeBetweenSpawns = 1000
+const evilDotsSpeed = 400
+
+/** Keyboard layout */
+const menuMoveKeys = ['a', 'q', 'd', 'ArrowLeft', 'ArrowRight', 'Tab']
+const menuSelectKeys = [' ', 'Enter']
+const layoutMovement1p = {
+  up: ['w', 'z', 'ArrowUp'],
+  down: ['s', 'ArrowDown'],
+  left: ['a', 'q', 'ArrowLeft'],
+  right: ['d', 'ArrowRight']
+}
+const layoutMovement2p1 = {
+  up: ['w', 'z'],
+  down: ['s'],
+  left: ['a', 'q'],
+  right: ['d']
+}
+const layoutMovement2p2 = {
+  up: ['ArrowUp'],
+  down: ['ArrowDown'],
+  left: ['ArrowLeft'],
+  right: ['ArrowRight']
+}
+
+/** Utils functions */
+const $ = (id) => document.getElementById(id)
+const setTransform = (node, [x, y]) => node.setAttribute('transform', `translate(${x*scaleFactor} ${y*scaleFactor})`)
+const createNS = (type) => document.createElementNS('http://www.w3.org/2000/svg', type)
+const calcDistance = (pos1, pos2) => ((pos1[0] - pos2[0])**2 + (pos1[1] - pos2[1])**2)**0.5
+
 let highScore = 0
 let twoPlayers = false
 
-function $(id) {
-  return document.getElementById(id)
-}
+let dot = null
+let dot1 = null
+let dot2 = null
 
-document.addEventListener('keydown', menuSelection, false)
-document.addEventListener('keydown', launch, false)
+// Init dots
+setTimeout(() => {
+  dot = $('dot')
+  dot1 = $('dot1')
+  dot2 = $('dot2')
+})
 
-function menuSelection(e) {
-  if (e.key == 'a' || e.key == 'q' || e.key == 'd' || e.key == 'ArrowLeft' || e.key == 'ArrowRight' || e.key == 'Tab') {
+let dotPos = [initDotPosX, initDotPosY]
+let dot1Pos = [initDot1PosX, initDot1PosY]
+let dot2Pos = [initDot2PosX, initDot2PosY]
+let dot1Dead = false
+let dot2Dead = false
+let currentTime = 0
+
+let currentEvilDotIndex = 1
+let timeBetweenSpawns = initTimeBetweenSpawns
+let creationTimeout = null
+let evilDotsMove = null
+let timerInterval = null
+let evilDots = []
+
+document.onkeydown = menuSelection
+
+/** Choose menu options */
+function menuSelection({ key }) {
+  if (menuMoveKeys.includes(key)) {
     $('menu-selection').setAttribute('x', twoPlayers? 240:800)
     $('hyphen').setAttribute('opacity', twoPlayers? 0:1)
     $('left-menu-title').setAttribute('opacity', twoPlayers? 1:0)
@@ -19,20 +83,13 @@ function menuSelection(e) {
     $('p1-score').setAttribute('opacity', twoPlayers? 0:1)
     $('p2-score').setAttribute('opacity', twoPlayers? 0:1)
     twoPlayers = !twoPlayers
+  } else if (menuSelectKeys.includes(key)) {
+    twoPlayers ? launchGame2p() : launchGame()
   }
 }
 
-function launch(e) {
-  if (e.key == ' ' || e.key == 'Enter') {
-    if (twoPlayers) {
-      launchGame2p()
-    } else {
-      launchGame()
-    }
-  }
-}
-
-const createPos = () => {
+/** Generate an evil dot's random spawn position */
+function createPos () {
   if (Math.random() > 0.5) {
     if (Math.random() > 0.5) {
       return [-9, Math.floor((Math.random() * 15) - 7)]
@@ -47,7 +104,9 @@ const createPos = () => {
     }
   }
 }
-const createMove = (pos) => {
+
+/** Generate an evil dot's movement direction based on its spawn position */
+function createMove (pos) {
   let possibleMoves = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]]
   if (pos[0] >= 7) {
     possibleMoves = possibleMoves.filter((move) => !(move[0] >= 0))
@@ -64,291 +123,189 @@ const createMove = (pos) => {
   return possibleMoves[Math.floor(Math.random() * possibleMoves.length)]
 }
 
-function launchGame() {
-  $('menu').setAttribute('opacity', 0)
-  $('dot-disp-map').setAttribute('scale', 256)
-  setTimeout(() => {
-    $('dot-disp-map').setAttribute('scale', 8)
-  }, 200)
+/** Create evil dots */
+function evilDotSpawn () {
+  const filter = createNS('filter')
+  filter.setAttribute('id', `evil-dot-disp${currentEvilDotIndex}`)
 
-  let dot = null
-  let dotPos = [0, 0]
-  let currentTime = 0
+  const feTurbulence = createNS('feTurbulence')
+  feTurbulence.setAttribute('type', 'fractalNoise')
+  feTurbulence.setAttribute('baseFrequency', '.1')
+  feTurbulence.setAttribute('numOctaves', '16')
+  feTurbulence.setAttribute('result', 'fractal')
 
-  const nbEvilDots = 8096
-  let creationTimeout = null
-  let evilDots = []
+  const feDisplacementMap = createNS('feDisplacementMap')
+  feDisplacementMap.setAttribute('in', 'SourceGraphic')
+  feDisplacementMap.setAttribute('in2', 'fractal')
+  feDisplacementMap.setAttribute('yChannelSelector', 'G')
+  feDisplacementMap.setAttribute('scale', '8')
 
-  setTimeout(() => {
-    dot = $('dot')
-    setTransform(dot, dotPos)
-    $('count-down').classList.add('count-down')
-    $('dot').classList.remove('dead')
-    $('dot1').classList.add('dead')
-    $('dot2').classList.add('dead')
+  const animateTurbulence = createNS('animate')
+  animateTurbulence.setAttribute('attributeName', 'seed')
+  animateTurbulence.setAttribute('values', '1;1800')
+  animateTurbulence.setAttribute('dur', '60')
+  animateTurbulence.setAttribute('repeatCount', 'indefinite')
+
+  $('evil-dots-filters').appendChild(filter)
+  filter.appendChild(feTurbulence)
+  filter.appendChild(feDisplacementMap)
+  feTurbulence.appendChild(animateTurbulence)
+
+  const evilDotG = createNS('g')
+  evilDotG.setAttribute('filter', `drop-shadow(0 0 20 #f00) url(#evil-dot-disp${currentEvilDotIndex})`)
+
+  const effectFixer = createNS('circle')
+  effectFixer.setAttribute('r', '1')
+  effectFixer.setAttribute('cx', '-100%')
+  effectFixer.setAttribute('cy', '-100%')
+
+  const evilDotCircle = createNS('circle')
+  evilDotCircle.setAttribute('id', `evil-dot${currentEvilDotIndex}`)
+  evilDotCircle.setAttribute('fill', '#f00')
+  evilDotCircle.setAttribute('r', 40)
+  evilDotCircle.setAttribute('cx', '50%')
+  evilDotCircle.setAttribute('cy', '50%')
+
+  $('evil-dots').appendChild(evilDotG)
+  evilDotG.appendChild(effectFixer)
+  evilDotG.appendChild(evilDotCircle)
+
+  const pos = createPos()
+  const move = createMove(pos)
+  setTransform(evilDotCircle, pos)
+  evilDots.push({node: evilDotCircle, pos, group: evilDotG, move, feDisplacementMap})
+
+  if (currentEvilDotIndex <= nbEvilDots) {
+    currentEvilDotIndex++
+    timeBetweenSpawns *= 0.99
+    creationTimeout = setTimeout(evilDotSpawn, timeBetweenSpawns)
+  }
+}
+
+/** Moves the dot according to the key pressed and the keyboard layout */
+function moveDot(key, layout, dot, dotPos) {
+  if (layout.up.includes(key) && dotPos[1] >= -5) {
+    dotPos[1] -=  1
+  } else if (layout.down.includes(key) && dotPos[1] <= 5) {
+    dotPos[1] +=  1
+  } else if (layout.left.includes(key) && dotPos[0] >= -7) {
+    dotPos[0] -=  1
+  } else if (layout.right.includes(key) && dotPos[0] <= 7) {
+    dotPos[0] +=  1
+  }
+  setTransform(dot, dotPos)
+}
+
+/** Moves the evil dots and return the new state */
+function updateEvilDot(evilDots) {
+  const deadDots = []
+  evilDots.forEach(({node, group, pos, move}, index) => {
+    // Remove dots going beyond the game's limits 
+    if (Math.abs(pos[0]) > 9 || Math.abs(pos[1]) > 7) {
+      $('evil-dots').removeChild(group)
+      deadDots.push(index)
+      return
+    }
+    pos[0] +=  move[0]
+    pos[1] +=  move[1]
+    setTransform(node, pos)
   })
+  return evilDots.filter((_, index) => !deadDots.includes(index))
+}
 
-  let currentEvilDotIndex = 1
-  let timeBeforeNew = 1000
-  const create = () => {
-    if (currentEvilDotIndex <= nbEvilDots) {
-      const filter = document.createElementNS('http://www.w3.org/2000/svg', 'filter')
-      filter.setAttribute('id', `evil-dot-disp${currentEvilDotIndex}`)
+function resetGame () {
+  $('dot-disp-map').setAttribute('scale', 256)
+  $('high-score').innerHTML = highScore
 
-      const feTurbulence = document.createElementNS('http://www.w3.org/2000/svg', 'feTurbulence')
-      filter.appendChild(feTurbulence)
-      feTurbulence.setAttribute('type', 'fractalNoise')
-      feTurbulence.setAttribute('baseFrequency', '.1')
-      feTurbulence.setAttribute('numOctaves', '16')
-      feTurbulence.setAttribute('result', 'fractal')
+  setTimeout(() => {
+    clearTimeout(creationTimeout)
+    clearInterval(evilDotsMove)
+    clearInterval(timerInterval)
 
-      const animateTurbulence = document.createElementNS('http://www.w3.org/2000/svg', 'animate')
-      feTurbulence.appendChild(animateTurbulence)
-      animateTurbulence.setAttribute('attributeName', 'seed')
-      animateTurbulence.setAttribute('values', '1;1800')
-      animateTurbulence.setAttribute('dur', '60')
-      animateTurbulence.setAttribute('repeatCount', 'indefinite')
+    evilDots = []
+    currentEvilDotIndex = 1
+    timeBetweenSpawns = initTimeBetweenSpawns
+    currentTime = 0
+    dotPos = [initDotPosX, initDotPosY]
+    dot1Pos = [initDot1PosX, initDot1PosY]
+    dot2Pos = [initDot2PosX, initDot2PosY]
+    dot1Dead = false
+    dot2Dead = false
+    dot.classList.remove('dead')
+    dot1.classList.remove('dead')
+    dot2.classList.remove('dead')
 
-      const feDisplacementMap = document.createElementNS('http://www.w3.org/2000/svg', 'feDisplacementMap')
-      filter.appendChild(feDisplacementMap)
-      feDisplacementMap.setAttribute('in', 'SourceGraphic')
-      feDisplacementMap.setAttribute('in2', 'fractal')
-      feDisplacementMap.setAttribute('yChannelSelector', 'G')
-      feDisplacementMap.setAttribute('scale', '8')
+    $('evil-dots').innerHTML = ''
+    $('count-down').innerHTML = ''
+    $('evil-dots-filters').innerHTML = ''
+    $('menu').setAttribute('opacity', 1)
+    $('count-down').classList.remove('count-down')
+    $('dot-disp-map').setAttribute('scale', 8)
 
-      $('evil-dots-filters').appendChild(filter)
+    document.onkeydown = menuSelection
+  }, 600)
+}
 
-      const evilDotG = document.createElementNS('http://www.w3.org/2000/svg', 'g')
+function initialSetup () {
+  $('menu').setAttribute('opacity', 0)
+  $('count-down').classList.add('count-down')
+  $('dot-disp-map').setAttribute('scale', 256)
+  setTimeout(() => $('dot-disp-map').setAttribute('scale', 8), 200)
 
-      const effectFixer = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
-      evilDotG.appendChild(effectFixer)
-      effectFixer.setAttribute('r', '1')
-      effectFixer.setAttribute('cx', '-100%')
-      effectFixer.setAttribute('cy', '-100%')
+  setTransform(dot, dotPos)
+  setTransform(dot1, dot1Pos)
+  setTransform(dot2, dot2Pos)
+  setTimeout(evilDotSpawn, timeBetweenSpawns)
+}
 
-      node = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
-      evilDotG.appendChild(node)
-      node.setAttribute('id', `evil-dot${currentEvilDotIndex}`)
-      node.setAttribute('fill', '#f00')
-      evilDotG.setAttribute('filter', `drop-shadow(0 0 20 #f00) url(#evil-dot-disp${currentEvilDotIndex})`)
-      node.setAttribute('r', 40)
-      node.setAttribute('cx', '50%')
-      node.setAttribute('cy', '50%')
-      $('evil-dots').appendChild(evilDotG)
-      const pos = createPos()
-      const move = createMove(pos)
-      setTransform(node, pos)
-      evilDots.push({node, pos, group: evilDotG, move, feDisplacementMap})
-      currentEvilDotIndex++
-      timeBeforeNew *= 0.99
-      creationTimeout = setTimeout(create, timeBeforeNew)
-    }
-  }
-
-  setTimeout(create, timeBeforeNew)
-  
+function launchGame() {
+  initialSetup()
+  dot1.classList.add('dead')
+  dot2.classList.add('dead')
   document.onkeydown = move
-  
-  function setTransform(node, [x, y]) {
-    node.setAttribute('transform', `translate(${x*80} ${y*80})`)
-  }
 
-  function move(e) {
-    e = e || window.event
-    if ((e.key == 'w' || e.key == 'z' || e.key == 'ArrowUp') && dotPos[1] >= -5) {
-      dotPos[1] -=  1
-    } else if ((e.key == 's' || e.key == 'ArrowDown') && dotPos[1] <= 5) {
-      dotPos[1] +=  1
-    } else if ((e.key == 'a' || e.key == 'q' || e.key == 'ArrowLeft') && dotPos[0] >= -7) {
-      dotPos[0] -=  1
-    } else if ((e.key == 'd' || e.key == 'ArrowRight') && dotPos[0] <= 7) {
-      dotPos[0] +=  1
-    }
-    setTransform(dot, dotPos)
+  function move({key}) {
+    moveDot(key, layoutMovement1p, dot, dotPos)
+
     checkCollision()
     checkDistance()
   }
 
   function checkDistance() {
     evilDots.forEach(({feDisplacementMap, pos}) => {
-      const distance = ((pos[0] - dotPos[0])**2 + (pos[1] - dotPos[1])**2)**0.5
-      feDisplacementMap.setAttribute('scale', 128 / (distance || .75))
+      const distance = calcDistance(pos, dotPos)
+      feDisplacementMap.setAttribute('scale', dispScaleFromDistance(distance))
     })
   }
 
   function checkCollision() {
     if (evilDots.some(({pos}) => dotPos[0] == pos[0] && dotPos[1] == pos[1])) {
-      $('dot-disp-map').setAttribute('scale', 256)
       $('last-score').innerHTML = currentTime
-      $('high-score').innerHTML = highScore
-      setTimeout(() => {
-        dot.classList.add('dead')
-      }, 100)
-      setTimeout(() => {
-        clearInterval(evilDotsMove)
-        clearInterval(timerInterval)
-        clearTimeout(creationTimeout)
-        dotPos = [0, 0]
-        currentTime = 0
-        evilDots = []
-        $('evil-dots').innerHTML = ''
-        $('count-down').innerHTML = ''
-        $('evil-dots-filters').innerHTML = ''
-        dot.classList.remove('dead')
-        setTransform(dot, dotPos)
-        $('count-down').classList.remove('count-down')
-
-        document.onkeydown = launch
-        $('menu').setAttribute('opacity', 1)
-        $('dot-disp-map').setAttribute('scale', 8)
-      }, 600)
+      setTimeout(() => dot.classList.add('dead'), 100)
+      resetGame()
     }
   }
 
-  const evilDotsMove = setInterval(() => {
-    const deadDots = []
-    evilDots.forEach(({node, group, pos, move}, index) => {
-      if (Math.abs(pos[0]) > 9 || Math.abs(pos[1]) > 7) {
-        $('evil-dots').removeChild(group)
-        deadDots.push(index)
-        return
-      }
-      pos[0] +=  move[0]
-      pos[1] +=  move[1]
-      setTransform(node, pos)
-    })
-    evilDots = evilDots.filter((_,index) => !deadDots.includes(index))
+  evilDotsMove = setInterval(() => {
+    evilDots = updateEvilDot(evilDots)
     checkCollision()
     checkDistance()
-  }, 400)
+  }, evilDotsSpeed)
 
-  const timerInterval = setInterval(() =>  {
+  timerInterval = setInterval(() =>  {
     $('count-down').innerHTML = ++currentTime
-    if(currentTime > highScore) {
-      highScore = currentTime
-    }
+    if (currentTime > highScore) highScore = currentTime
   }, 1000)
 }
 
 function launchGame2p() {
-  $('menu').setAttribute('opacity', 0)
-  $('dot-disp-map').setAttribute('scale', 256)
-  setTimeout(() => {
-    $('dot-disp-map').setAttribute('scale', 8)
-  }, 200)
-
-  let dot1 = null
-  let dot2 = null
-  let dot1Pos = [-2, 0]
-  let dot2Pos = [2, 0]
-  let dot1Dead = false
-  let dot2Dead = false
-
-  let currentTime = 0
-
-  const nbEvilDots = 8096
-  let creationTimeout = null
-  let evilDots = []
-
-  setTimeout(() => {
-    dot1 = $('dot1')
-    dot2 = $('dot2')
-    setTransform(dot1, dot1Pos)
-    setTransform(dot2, dot2Pos)
-    $('count-down').classList.add('count-down')
-    $('dot').classList.add('dead')
-    $('dot1').classList.remove('dead')
-    $('dot2').classList.remove('dead')
-  })
-
-  let currentEvilDotIndex = 1
-  let timeBeforeNew = 1000
-  const create = () => {
-    if (currentEvilDotIndex <= nbEvilDots) {
-      const filter = document.createElementNS('http://www.w3.org/2000/svg', 'filter')
-      filter.setAttribute('id', `evil-dot-disp${currentEvilDotIndex}`)
-
-      const feTurbulence = document.createElementNS('http://www.w3.org/2000/svg', 'feTurbulence')
-      filter.appendChild(feTurbulence)
-      feTurbulence.setAttribute('type', 'fractalNoise')
-      feTurbulence.setAttribute('baseFrequency', '.1')
-      feTurbulence.setAttribute('numOctaves', '16')
-      feTurbulence.setAttribute('result', 'fractal')
-
-      const animateTurbulence = document.createElementNS('http://www.w3.org/2000/svg', 'animate')
-      feTurbulence.appendChild(animateTurbulence)
-      animateTurbulence.setAttribute('attributeName', 'seed')
-      animateTurbulence.setAttribute('values', '1;1800')
-      animateTurbulence.setAttribute('dur', '60')
-      animateTurbulence.setAttribute('repeatCount', 'indefinite')
-
-      const feDisplacementMap = document.createElementNS('http://www.w3.org/2000/svg', 'feDisplacementMap')
-      filter.appendChild(feDisplacementMap)
-      feDisplacementMap.setAttribute('in', 'SourceGraphic')
-      feDisplacementMap.setAttribute('in2', 'fractal')
-      feDisplacementMap.setAttribute('yChannelSelector', 'G')
-      feDisplacementMap.setAttribute('scale', '8')
-
-      $('evil-dots-filters').appendChild(filter)
-
-      const evilDotG = document.createElementNS('http://www.w3.org/2000/svg', 'g')
-
-      const effectFixer = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
-      evilDotG.appendChild(effectFixer)
-      effectFixer.setAttribute('r', '1')
-      effectFixer.setAttribute('cx', '-100%')
-      effectFixer.setAttribute('cy', '-100%')
-
-      node = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
-      evilDotG.appendChild(node)
-      node.setAttribute('id', `evil-dot${currentEvilDotIndex}`)
-      node.setAttribute('fill', '#f00')
-      evilDotG.setAttribute('filter', `drop-shadow(0 0 20 #f00) url(#evil-dot-disp${currentEvilDotIndex})`)
-      node.setAttribute('r', 40)
-      node.setAttribute('cx', '50%')
-      node.setAttribute('cy', '50%')
-      $('evil-dots').appendChild(evilDotG)
-      const pos = createPos()
-      const move = createMove(pos)
-      setTransform(node, pos)
-      evilDots.push({node, pos, group: evilDotG, move, feDisplacementMap})
-      currentEvilDotIndex++
-      timeBeforeNew *= 0.99
-      creationTimeout = setTimeout(create, timeBeforeNew)
-    }
-  }
-
-  setTimeout(create, timeBeforeNew)
-
+  initialSetup()
+  dot.classList.add('dead')
   document.onkeydown = move
 
-  function setTransform(node, [x, y]) {
-    node.setAttribute('transform', `translate(${x*80} ${y*80})`)
-  }
-
-  function move(e) {
-    e = e || window.event
-    if ((e.key == 'w' || e.key == 'z') && dot1Pos[1] >= -5) {
-      dot1Pos[1] -=  1
-    } else if ((e.key == 's') && dot1Pos[1] <= 5) {
-      dot1Pos[1] +=  1
-    } else if ((e.key == 'a' || e.key == 'q') && dot1Pos[0] >= -7) {
-      dot1Pos[0] -=  1
-    } else if ((e.key == 'd') && dot1Pos[0] <= 7) {
-      dot1Pos[0] +=  1
-    }
-    setTransform(dot1, dot1Pos)
-
-    if ((e.key == 'ArrowUp') && dot2Pos[1] >= -5) {
-      dot2Pos[1] -=  1
-    } else if ((e.key == 'ArrowDown') && dot2Pos[1] <= 5) {
-      dot2Pos[1] +=  1
-    } else if ((e.key == 'ArrowLeft') && dot2Pos[0] >= -7) {
-      dot2Pos[0] -=  1
-    } else if ((e.key == 'ArrowRight') && dot2Pos[0] <= 7) {
-      dot2Pos[0] +=  1
-    }
-    setTransform(dot2, dot2Pos)
+  function move({key}) {
+    moveDot(key, layoutMovement2p1, dot1, dot1Pos)
+    moveDot(key, layoutMovement2p2, dot2, dot2Pos)
 
     checkCollision()
     checkDistance()
@@ -356,78 +313,36 @@ function launchGame2p() {
 
   function checkDistance() {
     evilDots.forEach(({feDisplacementMap, pos}) => {
-      const distance = ((pos[0] - dot1Pos[0]) ** 2 + (pos[1] - dot1Pos[1]) ** 2) ** .5
-      feDisplacementMap.setAttribute('scale', 128 / (distance || .75))
+      const distance1 = !dot1Dead && calcDistance(pos, dot1Pos) || Infinity
+      const distance2 = !dot2Dead && calcDistance(pos, dot2Pos) || Infinity
+      const distance = Math.min(distance1, distance2)
+      feDisplacementMap.setAttribute('scale',  dispScaleFromDistance(distance))
     })
   }
 
   function checkCollision() {
-    if (evilDots.some(({pos}) => dot1Pos[0] == pos[0] && dot1Pos[1] == pos[1])) {
-      dot1Dead = true
-      setTimeout(() => {
-        dot1.classList.add('dead')
-      }, 100)
+    function killDotIfCollide(dot, dotPos, dotDead, score) {
+      if (!dotDead && evilDots.some(({pos}) => dotPos[0] == pos[0] && dotPos[1] == pos[1])) {
+        $(score).innerHTML = currentTime
+        setTimeout(() => dot.classList.add('dead'), 100)
+        return true
+      }
+      return dotDead
     }
-    if (evilDots.some(({pos}) => dot2Pos[0] == pos[0] && dot2Pos[1] == pos[1])) {
-      dot2Dead = true
-      setTimeout(() => {
-        dot2.classList.add('dead')
-      }, 100)
-    }
-    if (dot1Dead) {
-      $('p1-score').innerHTML = currentTime
-    }
-    if (dot2Dead) {
-      $('p2-score').innerHTML = currentTime
-    }
-    if (dot1Dead && dot2Dead) {
-      $('dot-disp-map').setAttribute('scale', 256)
+    dot1Dead = killDotIfCollide(dot1, dot1Pos, dot1Dead, 'p1-score')
+    dot2Dead = killDotIfCollide(dot2, dot2Pos, dot2Dead, 'p2-score')
 
-      setTimeout(() => {
-        clearInterval(evilDotsMove)
-        clearInterval(timerInterval)
-        clearTimeout(creationTimeout)
-        dot1Pos = [-2, 0]
-        dot2Pos = [2, 0]
-        currentTime = 0
-        evilDots = []
-        $('evil-dots').innerHTML = ''
-        $('count-down').innerHTML = ''
-        $('evil-dots-filters').innerHTML = ''
-        dot1.classList.remove('dead')
-        dot2.classList.remove('dead')
-        setTransform(dot1, dot1Pos)
-        setTransform(dot2, dot2Pos)
-        $('count-down').classList.remove('count-down')
-
-        document.onkeydown = launch
-        $('menu').setAttribute('opacity', 1)
-        $('dot-disp-map').setAttribute('scale', 8)
-      }, 600)
-    }
+    if (dot1Dead && dot2Dead) resetGame()
   }
 
-  const evilDotsMove = setInterval(() => {
-    const deadDots = []
-    evilDots.forEach(({node, group, pos, move}, index) => {
-      if (Math.abs(pos[0]) > 9 || Math.abs(pos[1]) > 7) {
-        $('evil-dots').removeChild(group)
-        deadDots.push(index)
-        return
-      }
-      pos[0] +=  move[0]
-      pos[1] +=  move[1]
-      setTransform(node, pos)
-    })
-    evilDots = evilDots.filter((_,index) => !deadDots.includes(index))
+  evilDotsMove = setInterval(() => {
+    evilDots = updateEvilDot(evilDots)
     checkCollision()
     checkDistance()
-  }, 400)
+  }, evilDotsSpeed)
 
-  const timerInterval = setInterval(() =>  {
+  timerInterval = setInterval(() =>  {
     $('count-down').innerHTML = ++currentTime
-    if(currentTime > highScore) {
-      highScore = currentTime
-    }
+    if (currentTime > highScore) highScore = currentTime
   }, 1000)
 }

@@ -1,3 +1,6 @@
+:root {
+  color-scheme: dark;
+}
 body {
   background: #000 calc(50% - 40px) calc(50% + 40px) url("dot-bg-dark.svg");
   cursor: none;
