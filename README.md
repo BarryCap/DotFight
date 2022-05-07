@@ -9,10 +9,15 @@ The project wasn’t on GitHub at first (started on the 27<sup>th</sup> of April
 
 This is an SVG/HTML/CSS/JS project, same as most of my recent ones.
 
-## How to run the game
+## How to run the game as an application
+- [Download ZIP](https://github.com/BarryCap/DotFight/releases/download/v0.0/dot-fight-win_x64.zip)
+- Extract files from ZIP
+- Launch `dot-fight-win_x64.exe`
+
+## How to run the game in a web browser
 - [Download all project files](https://github.com/BarryCap/DotFight/archive/refs/heads/main.zip)
 - Extract folder from ZIP
-- Launch `dot.html` in a recent chromium-based browser (such as Chrome).
+- Launch `dot.html` in a recent chromium-based browser (such as Chrome)
 
 **Note** :
 The game works best in full screen (<kbd>F11</kbd>) with a screen resolution higher than 1280 × 1024. If you have a lower screen resolution, you can zoom out to fit the game board.
