@@ -47,8 +47,8 @@ svg {
 }
 
 .dead {
-  opacity: 0;
-  r: 80;
+  fill: #fff1;
+  filter: none;
 }
 
 @keyframes count-down-fill {

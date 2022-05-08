@@ -255,9 +255,9 @@ function resetGame() {
     dot2Pos = [initDot2PosX, initDot2PosY]
     dot1Dead = false
     dot2Dead = false
-    dot.classList.remove('dead')
-    dot1.classList.remove('dead')
-    dot2.classList.remove('dead')
+    dot.setAttribute('opacity', 1)
+    dot1.setAttribute('opacity', 1)
+    dot2.setAttribute('opacity', 1)
 
     $('evil-dots').innerHTML = ''
     $('count-down').innerHTML = ''
@@ -284,8 +284,8 @@ function initialSetup() {
 
 function launchGame() {
   initialSetup()
-  dot1.classList.add('dead')
-  dot2.classList.add('dead')
+  dot1.setAttribute('opacity', 0)
+  dot2.setAttribute('opacity', 0)
   document.onkeydown = move
 
   function move({ key }) {
@@ -324,7 +324,7 @@ function launchGame() {
 
 function launchGame2p() {
   initialSetup()
-  dot.classList.add('dead')
+  dot.setAttribute('opacity', 0)
   document.onkeydown = move
 
   function move({ key }) {
