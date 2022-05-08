@@ -37,9 +37,9 @@ const layoutMovement2p2 = {
 
 /** Utils functions */
 const $ = (id) => document.getElementById(id)
-const setTransform = (node, [x, y]) => node.setAttribute('transform', `translate(${x*scaleFactor} ${y*scaleFactor})`)
+const setTransform = (node, [x, y]) => node.setAttribute('transform', `translate(${x * scaleFactor} ${y * scaleFactor})`)
 const createNS = (type) => document.createElementNS('http://www.w3.org/2000/svg', type)
-const calcDistance = (pos1, pos2) => ((pos1[0] - pos2[0])**2 + (pos1[1] - pos2[1])**2)**0.5
+const calcDistance = (pos1, pos2) => ((pos1[0] - pos2[0]) ** 2 + (pos1[1] - pos2[1]) ** 2) ** .5
 
 let highScore = 0
 let twoPlayers = false
@@ -74,14 +74,14 @@ document.onkeydown = menuSelection
 /** Choose menu options */
 function menuSelection({ key }) {
   if (menuMoveKeys.includes(key)) {
-    $('menu-selection').setAttribute('x', twoPlayers? 240:800)
-    $('hyphen').setAttribute('opacity', twoPlayers? 0:1)
-    $('left-menu-title').setAttribute('opacity', twoPlayers? 1:0)
-    $('right-menu-title').setAttribute('opacity', twoPlayers? 1:0)
-    $('last-score').setAttribute('opacity', twoPlayers? 1:0)
-    $('high-score').setAttribute('opacity', twoPlayers? 1:0)
-    $('p1-score').setAttribute('opacity', twoPlayers? 0:1)
-    $('p2-score').setAttribute('opacity', twoPlayers? 0:1)
+    $('menu-selection').setAttribute('x', twoPlayers ? 240 : 800)
+    $('hyphen').setAttribute('opacity', twoPlayers ? 0 : 1)
+    $('left-menu-title').setAttribute('opacity', twoPlayers ? 1 : 0)
+    $('right-menu-title').setAttribute('opacity', twoPlayers ? 1 : 0)
+    $('last-score').setAttribute('opacity', twoPlayers ? 1 : 0)
+    $('high-score').setAttribute('opacity', twoPlayers ? 1 : 0)
+    $('p1-score').setAttribute('opacity', twoPlayers ? 0 : 1)
+    $('p2-score').setAttribute('opacity', twoPlayers ? 0 : 1)
     twoPlayers = !twoPlayers
   } else if (menuSelectKeys.includes(key)) {
     twoPlayers ? launchGame2p() : launchGame()
@@ -89,15 +89,15 @@ function menuSelection({ key }) {
 }
 
 /** Generate an evil dot's random spawn position */
-function createPos () {
-  if (Math.random() > 0.5) {
-    if (Math.random() > 0.5) {
+function createPos() {
+  if (Math.random() > .5) {
+    if (Math.random() > .5) {
       return [-9, Math.floor((Math.random() * 15) - 7)]
     } else {
       return [9, Math.floor((Math.random() * 15) - 7)]
     }
   } else {
-    if (Math.random() > 0.5) {
+    if (Math.random() > .5) {
       return [Math.floor((Math.random() * 19) - 9), -7]
     } else {
       return [Math.floor((Math.random() * 19) - 9), 7]
@@ -106,11 +106,11 @@ function createPos () {
 }
 
 /** Generate an evil dot's movement direction based on its spawn position */
-function createMove (pos) {
+function createMove(pos) {
   let possibleMoves = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]]
   if (pos[0] >= 7) {
     possibleMoves = possibleMoves.filter((move) => !(move[0] >= 0))
-  } 
+  }
   if (pos[0] <= -7) {
     possibleMoves = possibleMoves.filter((move) => !(move[0] <= 0))
   }
@@ -124,7 +124,7 @@ function createMove (pos) {
 }
 
 /** Create evil dots */
-function evilDotSpawn () {
+function evilDotSpawn() {
   const filter = createNS('filter')
   filter.setAttribute('id', `evil-dot-disp${currentEvilDotIndex}`)
 
@@ -174,11 +174,11 @@ function evilDotSpawn () {
   const pos = createPos()
   const move = createMove(pos)
   setTransform(evilDotCircle, pos)
-  evilDots.push({node: evilDotCircle, pos, group: evilDotG, move, feDisplacementMap})
+  evilDots.push({ node: evilDotCircle, pos, group: evilDotG, move, feDisplacementMap })
 
   if (currentEvilDotIndex <= nbEvilDots) {
     currentEvilDotIndex++
-    timeBetweenSpawns *= 0.99
+    timeBetweenSpawns *= .99
     creationTimeout = setTimeout(evilDotSpawn, timeBetweenSpawns)
   }
 }
@@ -186,13 +186,13 @@ function evilDotSpawn () {
 /** Moves the dot according to the key pressed and the keyboard layout */
 function moveDot(key, layout, dot, dotPos) {
   if (layout.up.includes(key) && dotPos[1] >= -5) {
-    dotPos[1] -=  1
+    dotPos[1] -= 1
   } else if (layout.down.includes(key) && dotPos[1] <= 5) {
-    dotPos[1] +=  1
+    dotPos[1] += 1
   } else if (layout.left.includes(key) && dotPos[0] >= -7) {
-    dotPos[0] -=  1
+    dotPos[0] -= 1
   } else if (layout.right.includes(key) && dotPos[0] <= 7) {
-    dotPos[0] +=  1
+    dotPos[0] += 1
   }
   setTransform(dot, dotPos)
 }
@@ -200,21 +200,21 @@ function moveDot(key, layout, dot, dotPos) {
 /** Moves the evil dots and return the new state */
 function updateEvilDot(evilDots) {
   const deadDots = []
-  evilDots.forEach(({node, group, pos, move}, index) => {
+  evilDots.forEach(({ node, group, pos, move }, index) => {
     // Remove dots going beyond the game's limits 
     if (Math.abs(pos[0]) > 9 || Math.abs(pos[1]) > 7) {
       $('evil-dots').removeChild(group)
       deadDots.push(index)
       return
     }
-    pos[0] +=  move[0]
-    pos[1] +=  move[1]
+    pos[0] += move[0]
+    pos[1] += move[1]
     setTransform(node, pos)
   })
   return evilDots.filter((_, index) => !deadDots.includes(index))
 }
 
-function resetGame () {
+function resetGame() {
   $('dot-disp-map').setAttribute('scale', 256)
   $('high-score').innerHTML = highScore
 
@@ -247,7 +247,7 @@ function resetGame () {
   }, 600)
 }
 
-function initialSetup () {
+function initialSetup() {
   $('menu').setAttribute('opacity', 0)
   $('count-down').classList.add('count-down')
   $('dot-disp-map').setAttribute('scale', 256)
@@ -265,7 +265,7 @@ function launchGame() {
   dot2.classList.add('dead')
   document.onkeydown = move
 
-  function move({key}) {
+  function move({ key }) {
     moveDot(key, layoutMovement1p, dot, dotPos)
 
     checkCollision()
@@ -273,14 +273,14 @@ function launchGame() {
   }
 
   function checkDistance() {
-    evilDots.forEach(({feDisplacementMap, pos}) => {
+    evilDots.forEach(({ feDisplacementMap, pos }) => {
       const distance = calcDistance(pos, dotPos)
       feDisplacementMap.setAttribute('scale', dispScaleFromDistance(distance))
     })
   }
 
   function checkCollision() {
-    if (evilDots.some(({pos}) => dotPos[0] == pos[0] && dotPos[1] == pos[1])) {
+    if (evilDots.some(({ pos }) => dotPos[0] == pos[0] && dotPos[1] == pos[1])) {
       $('last-score').innerHTML = currentTime
       setTimeout(() => dot.classList.add('dead'), 100)
       resetGame()
@@ -293,7 +293,7 @@ function launchGame() {
     checkDistance()
   }, evilDotsSpeed)
 
-  timerInterval = setInterval(() =>  {
+  timerInterval = setInterval(() => {
     $('count-down').innerHTML = ++currentTime
     if (currentTime > highScore) highScore = currentTime
   }, 1000)
@@ -304,7 +304,7 @@ function launchGame2p() {
   dot.classList.add('dead')
   document.onkeydown = move
 
-  function move({key}) {
+  function move({ key }) {
     moveDot(key, layoutMovement2p1, dot1, dot1Pos)
     moveDot(key, layoutMovement2p2, dot2, dot2Pos)
 
@@ -313,17 +313,17 @@ function launchGame2p() {
   }
 
   function checkDistance() {
-    evilDots.forEach(({feDisplacementMap, pos}) => {
+    evilDots.forEach(({ feDisplacementMap, pos }) => {
       const distance1 = !dot1Dead && calcDistance(pos, dot1Pos) || Infinity
       const distance2 = !dot2Dead && calcDistance(pos, dot2Pos) || Infinity
       const distance = Math.min(distance1, distance2)
-      feDisplacementMap.setAttribute('scale',  dispScaleFromDistance(distance))
+      feDisplacementMap.setAttribute('scale', dispScaleFromDistance(distance))
     })
   }
 
   function checkCollision() {
     function killDotIfCollide(dot, dotPos, dotDead, score) {
-      if (!dotDead && evilDots.some(({pos}) => dotPos[0] == pos[0] && dotPos[1] == pos[1])) {
+      if (!dotDead && evilDots.some(({ pos }) => dotPos[0] == pos[0] && dotPos[1] == pos[1])) {
         $(score).innerHTML = currentTime
         setTimeout(() => dot.classList.add('dead'), 100)
         return true
@@ -342,7 +342,7 @@ function launchGame2p() {
     checkDistance()
   }, evilDotsSpeed)
 
-  timerInterval = setInterval(() =>  {
+  timerInterval = setInterval(() => {
     $('count-down').innerHTML = ++currentTime
     if (currentTime > highScore) highScore = currentTime
   }, 1000)
