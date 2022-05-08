@@ -46,7 +46,7 @@ svg {
   transition: .2s;
 }
 
-.dead {
+.ghost {
   fill: #fff1;
   filter: none;
 }
