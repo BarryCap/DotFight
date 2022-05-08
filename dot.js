@@ -130,20 +130,20 @@ function evilDotSpawn () {
 
   const feTurbulence = createNS('feTurbulence')
   feTurbulence.setAttribute('type', 'fractalNoise')
-  feTurbulence.setAttribute('baseFrequency', '.1')
-  feTurbulence.setAttribute('numOctaves', '16')
+  feTurbulence.setAttribute('baseFrequency', .1)
+  feTurbulence.setAttribute('numOctaves', 16)
   feTurbulence.setAttribute('result', 'fractal')
 
   const feDisplacementMap = createNS('feDisplacementMap')
   feDisplacementMap.setAttribute('in', 'SourceGraphic')
   feDisplacementMap.setAttribute('in2', 'fractal')
   feDisplacementMap.setAttribute('yChannelSelector', 'G')
-  feDisplacementMap.setAttribute('scale', '8')
+  feDisplacementMap.setAttribute('scale', 8)
 
   const animateTurbulence = createNS('animate')
   animateTurbulence.setAttribute('attributeName', 'seed')
   animateTurbulence.setAttribute('values', '1;1800')
-  animateTurbulence.setAttribute('dur', '60')
+  animateTurbulence.setAttribute('dur', 60)
   animateTurbulence.setAttribute('repeatCount', 'indefinite')
 
   $('evil-dots-filters').appendChild(filter)
@@ -155,9 +155,10 @@ function evilDotSpawn () {
   evilDotG.setAttribute('filter', `drop-shadow(0 0 20 #f00) url(#evil-dot-disp${currentEvilDotIndex})`)
 
   const effectFixer = createNS('circle')
-  effectFixer.setAttribute('r', '1')
-  effectFixer.setAttribute('cx', '-100%')
-  effectFixer.setAttribute('cy', '-100%')
+  effectFixer.setAttribute('r', 160)
+  effectFixer.setAttribute('cx', '50%')
+  effectFixer.setAttribute('cy', '50%')
+  effectFixer.setAttribute('fill', '#f0f0')
 
   const evilDotCircle = createNS('circle')
   evilDotCircle.setAttribute('id', `evil-dot${currentEvilDotIndex}`)
