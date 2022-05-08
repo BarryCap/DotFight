@@ -184,17 +184,40 @@ function evilDotSpawn() {
 }
 
 /** Moves the dot according to the key pressed and the keyboard layout */
-function moveDot(key, layout, dot, dotPos) {
+function moveDot(key, layout, dot, dotPos, otherDotPos) {
   if (layout.up.includes(key) && dotPos[1] >= -5) {
-    dotPos[1] -= 1
+    if (check2pCollision(dot, dotPos, [0, -1], otherDotPos)) {
+      dotPos[1] -= 1
+      setTransform(dot, dotPos)
+    }
   } else if (layout.down.includes(key) && dotPos[1] <= 5) {
-    dotPos[1] += 1
+    if (check2pCollision(dot, dotPos, [0, 1], otherDotPos)) {
+      dotPos[1] += 1
+      setTransform(dot, dotPos)
+    }
   } else if (layout.left.includes(key) && dotPos[0] >= -7) {
-    dotPos[0] -= 1
+    if (check2pCollision(dot, dotPos, [-1, 0], otherDotPos)) {
+      dotPos[0] -= 1
+      setTransform(dot, dotPos)
+    }
   } else if (layout.right.includes(key) && dotPos[0] <= 7) {
-    dotPos[0] += 1
+    if (check2pCollision(dot, dotPos, [1, 0], otherDotPos)) {
+      dotPos[0] += 1
+      setTransform(dot, dotPos)
+    }
   }
-  setTransform(dot, dotPos)
+}
+
+function check2pCollision(dotMoving, dotPosMoving, move, dotPosStatic) {
+  if (!twoPlayers) return true
+  if (dotPosMoving[0] + move[0] == dotPosStatic[0] && dotPosMoving[1] + move[1] == dotPosStatic[1]) {
+    setTransform(dotMoving, [dotPosMoving[0] + move[0] * .5, dotPosMoving[1] + move[1] * .5])
+    setTimeout(() => {
+      setTransform(dotMoving, dotPosMoving)
+    }, 200)
+    return false
+  }
+  return true
 }
 
 /** Moves the evil dots and return the new state */
@@ -305,8 +328,8 @@ function launchGame2p() {
   document.onkeydown = move
 
   function move({ key }) {
-    moveDot(key, layoutMovement2p1, dot1, dot1Pos)
-    moveDot(key, layoutMovement2p2, dot2, dot2Pos)
+    moveDot(key, layoutMovement2p1, dot1, dot1Pos, dot2Pos)
+    moveDot(key, layoutMovement2p2, dot2, dot2Pos, dot1Pos)
 
     checkCollision()
     checkDistance()

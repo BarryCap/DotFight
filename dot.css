@@ -31,6 +31,9 @@ svg {
 #dot, #dot1, #dot2 {
   transition: .1s;
 }
+#dot2 {
+  mix-blend-mode: difference;
+}
 #evil-dots *,
 #menu-selection,
 #hyphen,
