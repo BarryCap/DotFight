@@ -14,7 +14,8 @@ const initTimeBetweenSpawns = 1000
 const evilDotsSpeed = 400
 
 /** Keyboard layout */
-const menuMoveKeys = ['a', 'q', 'd', 'ArrowLeft', 'ArrowRight', 'Tab']
+const menuMoveXKeys = ['a', 'd', 'q', 'ArrowLeft', 'ArrowRight', 'Tab']
+const menuMoveYKeys = ['w', 's', 'z', 'ArrowUp', 'ArrowDown']
 const menuSelectKeys = [' ', 'Enter']
 const layoutMovement1p = {
   up: ['w', 'z', 'ArrowUp'],
@@ -42,7 +43,10 @@ const createNS = (type) => document.createElementNS('http://www.w3.org/2000/svg'
 const calcDistance = (pos1, pos2) => ((pos1[0] - pos2[0]) ** 2 + (pos1[1] - pos2[1]) ** 2) ** .5
 
 let highScore = 0
+
 let twoPlayers = false
+let credits = false
+let options = false
 
 let dot = null
 let dot1 = null
@@ -69,22 +73,94 @@ let evilDotsMove = null
 let timerInterval = null
 let evilDots = []
 
+let position = '1p'
+
 document.onkeydown = menuSelection
 
 /** Choose menu options */
 function menuSelection({ key }) {
-  if (menuMoveKeys.includes(key)) {
-    $('menu-selection').setAttribute('x', twoPlayers ? 240 : 800)
-    $('hyphen').setAttribute('opacity', twoPlayers ? 0 : 1)
-    $('left-menu-title').setAttribute('opacity', twoPlayers ? 1 : 0)
-    $('right-menu-title').setAttribute('opacity', twoPlayers ? 1 : 0)
-    $('last-score').setAttribute('opacity', twoPlayers ? 1 : 0)
-    $('high-score').setAttribute('opacity', twoPlayers ? 1 : 0)
-    $('p1-score').setAttribute('opacity', twoPlayers ? 0 : 1)
-    $('p2-score').setAttribute('opacity', twoPlayers ? 0 : 1)
-    twoPlayers = !twoPlayers
-  } else if (menuSelectKeys.includes(key)) {
-    twoPlayers ? launchGame2p() : launchGame()
+  const mS = $('menu-selection')
+  if (position == '1p') {
+    if (menuMoveXKeys.includes(key)) {
+      mS.setAttribute('x', 720)
+      mS.setAttribute('y', 712)
+      mS.setAttribute('width', 240)
+      mS.setAttribute('height', 160)
+      position = '2p'
+      console.log(position)
+    } else if (menuMoveYKeys.includes(key)) {
+      mS.setAttribute('x', 100)
+      mS.setAttribute('y', 852)
+      mS.setAttribute('width', 120)
+      mS.setAttribute('height', 120)
+      position = 'credits'
+    }
+  } else if (position == '2p') {
+    if (menuMoveXKeys.includes(key)) {
+      mS.setAttribute('x', 320)
+      mS.setAttribute('y', 712)
+      mS.setAttribute('width', 240)
+      mS.setAttribute('height', 160)
+      position = '1p'
+    } else if (menuMoveYKeys.includes(key)) {
+      mS.setAttribute('x', 1060)
+      mS.setAttribute('y', 852)
+      mS.setAttribute('width', 120)
+      mS.setAttribute('height', 120)
+      position = 'options'
+    }
+  } else if (position == 'credits') {
+    if (menuMoveXKeys.includes(key)) {
+      mS.setAttribute('x', 1060)
+      mS.setAttribute('y', 852)
+      mS.setAttribute('width', 120)
+      mS.setAttribute('height', 120)
+      position = 'options'
+    } else if (menuMoveYKeys.includes(key)) {
+      mS.setAttribute('x', 320)
+      mS.setAttribute('y', 712)
+      mS.setAttribute('width', 240)
+      mS.setAttribute('height', 160)
+      position = '1p'
+    }
+  } else if (position == 'options') {
+    if (menuMoveXKeys.includes(key)) {
+      mS.setAttribute('x', 100)
+      mS.setAttribute('y', 852)
+      mS.setAttribute('width', 120)
+      mS.setAttribute('height', 120)
+      position = 'credits'
+    } else if (menuMoveYKeys.includes(key)) {
+      mS.setAttribute('x', 720)
+      mS.setAttribute('y', 712)
+      mS.setAttribute('width', 240)
+      mS.setAttribute('height', 160)
+      position = '2p'
+    }
+  }
+  if (position == '1p') {
+    $('hyphen').setAttribute('opacity', 0)
+    $('left-menu-title').setAttribute('opacity', 1)
+    $('right-menu-title').setAttribute('opacity', 1)
+    $('last-score').setAttribute('opacity', 1)
+    $('high-score').setAttribute('opacity', 1)
+    $('p1-score').setAttribute('opacity', 0)
+    $('p2-score').setAttribute('opacity', 0)
+    twoPlayers = false
+  } else if (position == '2p') {
+    $('hyphen').setAttribute('opacity', 1)
+    $('left-menu-title').setAttribute('opacity', 0)
+    $('right-menu-title').setAttribute('opacity', 0)
+    $('last-score').setAttribute('opacity', 0)
+    $('high-score').setAttribute('opacity', 0)
+    $('p1-score').setAttribute('opacity', 1)
+    $('p2-score').setAttribute('opacity', 1)
+    twoPlayers = true
+  }
+  if (menuSelectKeys.includes(key) && position == '1p') {
+    launchGame()
+  } else if (menuSelectKeys.includes(key) && position == '2p') {
+    launchGame2p()
   }
 }
 
