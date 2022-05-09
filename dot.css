@@ -21,6 +21,10 @@ svg {
   font-family: consolas, monospace;
   font-weight: bold;
 }
+a {
+  fill: #8ffc;
+  text-decoration: underline;
+}
 
 @keyframes drawing {
   0% { stroke-dashoffset: 32; }
