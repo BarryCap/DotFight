@@ -17,6 +17,7 @@ const evilDotsSpeed = 400
 const menuMoveXKeys = ['a', 'd', 'q', 'ArrowLeft', 'ArrowRight', 'Tab']
 const menuMoveYKeys = ['w', 's', 'z', 'ArrowUp', 'ArrowDown']
 const menuSelectKeys = [' ', 'Enter']
+const menuEscape = ['Escape', 'Backspace', 'Home']
 const layoutMovement1p = {
   up: ['w', 'z', 'ArrowUp'],
   down: ['s', 'ArrowDown'],
@@ -73,72 +74,71 @@ let evilDotsMove = null
 let timerInterval = null
 let evilDots = []
 
-let position = '1p'
+let selection = '1p'
 
 document.onkeydown = menuSelection
 
 /** Choose menu options */
 function menuSelection({ key }) {
   const mS = $('menu-selection')
-  if (position == '1p') {
+  if (selection == '1p') {
     if (menuMoveXKeys.includes(key)) {
       mS.setAttribute('x', 720)
       mS.setAttribute('y', 712)
       mS.setAttribute('width', 240)
       mS.setAttribute('height', 160)
-      position = '2p'
-      console.log(position)
+      selection = '2p'
     } else if (menuMoveYKeys.includes(key)) {
       mS.setAttribute('x', 100)
       mS.setAttribute('y', 852)
       mS.setAttribute('width', 120)
       mS.setAttribute('height', 120)
-      position = 'credits'
+      selection = 'credits'
     }
-  } else if (position == '2p') {
+  } else if (selection == '2p') {
     if (menuMoveXKeys.includes(key)) {
       mS.setAttribute('x', 320)
       mS.setAttribute('y', 712)
       mS.setAttribute('width', 240)
       mS.setAttribute('height', 160)
-      position = '1p'
+      selection = '1p'
     } else if (menuMoveYKeys.includes(key)) {
       mS.setAttribute('x', 1060)
       mS.setAttribute('y', 852)
       mS.setAttribute('width', 120)
       mS.setAttribute('height', 120)
-      position = 'options'
+      selection = 'options'
     }
-  } else if (position == 'credits') {
+  } else if (selection == 'credits') {
     if (menuMoveXKeys.includes(key)) {
       mS.setAttribute('x', 1060)
       mS.setAttribute('y', 852)
       mS.setAttribute('width', 120)
       mS.setAttribute('height', 120)
-      position = 'options'
+      selection = 'options'
     } else if (menuMoveYKeys.includes(key)) {
       mS.setAttribute('x', 320)
       mS.setAttribute('y', 712)
       mS.setAttribute('width', 240)
       mS.setAttribute('height', 160)
-      position = '1p'
+      selection = '1p'
     }
-  } else if (position == 'options') {
+  } else if (selection == 'options') {
     if (menuMoveXKeys.includes(key)) {
       mS.setAttribute('x', 100)
       mS.setAttribute('y', 852)
       mS.setAttribute('width', 120)
       mS.setAttribute('height', 120)
-      position = 'credits'
+      selection = 'credits'
     } else if (menuMoveYKeys.includes(key)) {
       mS.setAttribute('x', 720)
       mS.setAttribute('y', 712)
       mS.setAttribute('width', 240)
       mS.setAttribute('height', 160)
-      position = '2p'
+      selection = '2p'
     }
   }
-  if (position == '1p') {
+  if (selection == '1p') {
     $('hyphen').setAttribute('opacity', 0)
     $('left-menu-title').setAttribute('opacity', 1)
     $('right-menu-title').setAttribute('opacity', 1)
@@ -147,7 +147,7 @@ function menuSelection({ key }) {
     $('p1-score').setAttribute('opacity', 0)
     $('p2-score').setAttribute('opacity', 0)
     twoPlayers = false
-  } else if (position == '2p') {
+  } else if (selection == '2p') {
     $('hyphen').setAttribute('opacity', 1)
     $('left-menu-title').setAttribute('opacity', 0)
     $('right-menu-title').setAttribute('opacity', 0)
@@ -157,10 +157,30 @@ function menuSelection({ key }) {
     $('p2-score').setAttribute('opacity', 1)
     twoPlayers = true
   }
-  if (menuSelectKeys.includes(key) && position == '1p') {
+  if (menuSelectKeys.includes(key) && selection == '1p') {
     launchGame()
-  } else if (menuSelectKeys.includes(key) && position == '2p') {
+  } else if (menuSelectKeys.includes(key) && selection == '2p') {
     launchGame2p()
+  } else if (menuSelectKeys.includes(key) && selection == 'credits') {
+    $('menu-top-page').setAttribute('opacity', 0)
+    $('credits-page').setAttribute('opacity', 1)
+    document.onkeydown = escapeMenu
+  } else if (menuSelectKeys.includes(key) && selection == 'options') {
+    $('menu-top-page').setAttribute('opacity', 0)
+    $('options-page').setAttribute('opacity', 1)
+    document.onkeydown = escapeMenu
+  }
+}
+
+function escapeMenu({ key }) {
+  if (menuEscape.includes(key) && selection == 'credits') {
+    $('menu-top-page').setAttribute('opacity', 1)
+    $('credits-page').setAttribute('opacity', 0)
+    document.onkeydown = menuSelection
+  } else if (menuEscape.includes(key) && selection == 'options') {
+    $('menu-top-page').setAttribute('opacity', 1)
+    $('options-page').setAttribute('opacity', 0)
+    document.onkeydown = menuSelection
   }
 }
 

@@ -22,6 +22,25 @@ svg {
   font-weight: bold;
 }
 
+@keyframes drawing {
+  0% { stroke-dashoffset: 32; }
+  50% { stroke-dashoffset: 32; }
+  100% { stroke-dashoffset: 0; }
+}
+#credits-icon, #options-icon {
+  animation: drawing 4s ease-in;
+  stroke-dasharray: 32;
+}
+@keyframes drawing-long {
+  0% { stroke-dashoffset: 800; }
+  50% { stroke-dashoffset: 800; }
+  100% { stroke-dashoffset: 0; }
+}
+rect {
+  animation: drawing-long 2s;
+  stroke-dasharray: 800;
+}
+
 #menu {
   outline: solid 4px #333;
   position: absolute;
@@ -42,7 +61,10 @@ svg {
 #last-score,
 #high-score,
 #p1-score,
-#p2-score {
+#p2-score,
+#menu-top-page,
+#credits-page,
+#options-page {
   transition: .2s;
 }
 
