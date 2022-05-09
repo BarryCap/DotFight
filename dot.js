@@ -15,7 +15,7 @@ const evilDotsSpeed = 400
 
 /** Keyboard layout */
 const menuMoveXKeys = ['a', 'd', 'q', 'ArrowLeft', 'ArrowRight', 'Tab']
-const menuMoveYKeys = ['w', 's', 'z', 'ArrowUp', 'ArrowDown']
+const menuMoveYKeys = ['w', 's', 'z', 'ArrowUp', 'ArrowDown', 'Tab']
 const menuSelectKeys = [' ', 'Enter']
 const menuEscape = ['Escape', 'Backspace', 'Home']
 const layoutMovement1p = {
@@ -164,15 +164,19 @@ function menuSelection({ key }) {
   } else if (menuSelectKeys.includes(key) && selection == 'credits') {
     $('menu-top-page').setAttribute('opacity', 0)
     $('credits-page').setAttribute('opacity', 1)
-    document.onkeydown = escapeMenu
+    document.onkeydown = optionsSelection
   } else if (menuSelectKeys.includes(key) && selection == 'options') {
     $('menu-top-page').setAttribute('opacity', 0)
     $('options-page').setAttribute('opacity', 1)
-    document.onkeydown = escapeMenu
+    document.onkeydown = optionsSelection
   }
 }
 
-function escapeMenu({ key }) {
+let selectedOption = 'glow'
+let glowEffect = true
+let distEffect = true
+
+function optionsSelection({ key }) {
   if (menuEscape.includes(key) && selection == 'credits') {
     $('menu-top-page').setAttribute('opacity', 1)
     $('credits-page').setAttribute('opacity', 0)
@@ -182,6 +186,41 @@ function escapeMenu({ key }) {
     $('options-page').setAttribute('opacity', 0)
     document.onkeydown = menuSelection
   }
+  const oS = $('options-selection')
+  if (selectedOption == 'glow') {
+    if (menuMoveYKeys.includes(key)) {
+      oS.setAttribute('y', 590)
+      selectedOption = 'dist'
+    }
+  } else if (selectedOption == 'dist') {
+    if (menuMoveYKeys.includes(key)) {
+      oS.setAttribute('y', 350)
+      selectedOption = 'glow'
+    }
+  }
+  if (menuSelectKeys.includes(key) && selectedOption == 'glow' && glowEffect) {
+    $('tick-glow').setAttribute('opacity', 0)
+    glowEffect = false
+    $('menu-pages').setAttribute('filter', 'url(#dot-disp)')
+  } else if (menuSelectKeys.includes(key) && selectedOption == 'dist' && distEffect) {
+    $('tick-dist').setAttribute('opacity', 0)
+    distEffect = false
+    $('dot-disp').setAttribute('baseFrequency', '0') // TODO make this work
+  } else if (menuSelectKeys.includes(key) && selectedOption == 'glow' && glowEffect == false) {
+    $('tick-glow').setAttribute('opacity', 1)
+    glowEffect = true
+    $('menu-pages').setAttribute('filter', 'drop-shadow(0 0 20px #8ffc) url(#dot-disp)')
+  } else if (menuSelectKeys.includes(key) && selectedOption == 'dist' && distEffect == false) {
+    $('tick-dist').setAttribute('opacity', 1)
+    distEffect = true
+  }
+}
+
+/** Change game quality */
+function changeQuality() {
+  if (glowEffect) {
+    $('dot-disp').remove
+  } else { }
 }
 
 /** Generate an evil dot's random spawn position */

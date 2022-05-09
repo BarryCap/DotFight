@@ -21,10 +21,6 @@ svg {
   font-family: consolas, monospace;
   font-weight: bold;
 }
-a {
-  fill: #8ffc;
-  text-decoration: underline;
-}
 
 @keyframes drawing {
   0% { stroke-dashoffset: 32; }
@@ -40,7 +36,7 @@ a {
   50% { stroke-dashoffset: 800; }
   100% { stroke-dashoffset: 0; }
 }
-rect {
+#menu-selection {
   animation: drawing-long 2s;
   stroke-dasharray: 800;
 }
@@ -59,6 +55,7 @@ rect {
 }
 #evil-dots *,
 #menu-selection,
+#options-selection,
 #hyphen,
 #left-menu-title,
 #right-menu-title,
@@ -68,7 +65,9 @@ rect {
 #p2-score,
 #menu-top-page,
 #credits-page,
-#options-page {
+#options-page,
+#tick-glow,
+#tick-dist {
   transition: .2s;
 }
 
