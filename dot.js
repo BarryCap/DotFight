@@ -233,16 +233,16 @@ function disableGlow() {
 }
 
 function enableGlow() {
-  $('menu-top-page-white').setAttribute('filter', 'drop-shadow(0 0 20px #8ffc)')
-  $('menu-top-page-yellow').setAttribute('filter', 'drop-shadow(0 0 20px #ff0)')
-  $('menu-top-page-cyan').setAttribute('filter', 'drop-shadow(0 0 20px #0ff)')
-  $('menu-pages').setAttribute('filter', 'drop-shadow(0 0 20px #8ffc) url(#dot-disp)')
-  $('credits-page-yellow').setAttribute('filter', 'drop-shadow(0 0 20px #ff08)')
-  $('credits-page-cyan').setAttribute('filter', 'drop-shadow(0 0 20px #0ff8)')
-  $('dot').setAttribute('filter', 'drop-shadow(0 0 20px #8ff)')
-  $('dot1').setAttribute('filter', 'drop-shadow(0 0 20px #ff0)')
-  $('dot2').setAttribute('filter', 'drop-shadow(0 0 20px #0ff)')
-  $('count-down').setAttribute('filter', 'drop-shadow(0 0 20px #8ff) drop-shadow(0 0 20px #8ff8)')
+  $('menu-top-page-white').setAttribute('filter', 'drop-shadow(0 0 20 #8ffc)')
+  $('menu-top-page-yellow').setAttribute('filter', 'drop-shadow(0 0 20 #ff0)')
+  $('menu-top-page-cyan').setAttribute('filter', 'drop-shadow(0 0 20 #0ff)')
+  $('menu-pages').setAttribute('filter', 'drop-shadow(0 0 20 #8ffc) url(#dot-disp)')
+  $('credits-page-yellow').setAttribute('filter', 'drop-shadow(0 0 20 #ff08)')
+  $('credits-page-cyan').setAttribute('filter', 'drop-shadow(0 0 20 #0ff8)')
+  $('dot').setAttribute('filter', 'drop-shadow(0 0 20 #8ff)')
+  $('dot1').setAttribute('filter', 'drop-shadow(0 0 20 #ff0)')
+  $('dot2').setAttribute('filter', 'drop-shadow(0 0 20 #0ff)')
+  $('count-down').setAttribute('filter', 'drop-shadow(0 0 20 #8ff) drop-shadow(0 0 20 #8ff8)')
   $('menu').classList.remove('bg-no-glow')
   $('board').classList.remove('bg-no-glow')
 }
