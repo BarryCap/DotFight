@@ -7,14 +7,14 @@ I made this project thanks to [Archibald Perez](https://github.com/Archibald-Per
 
 The project wasn’t on GitHub at first (started on the 27<sup>th</sup> of April 2022), but we decided quite early to push it on the platform.
 
-This is an SVG/HTML/CSS/JS project, same as most of my recent ones.
+This is an SVG/HTML/CSS/JS project (without using any libraries), same as most of my recent ones.
 
-## How to run the game as an application
+## How to run the game as an application (version 0.0)
 - [Download ZIP](https://github.com/BarryCap/DotFight/releases/download/v0.0/dot-fight-win_x64.zip)
 - Extract files from ZIP
 - Launch `dot-fight-win_x64.exe`
 
-## How to run the game in a web browser
+## How to run the game in a web browser (latest version, 1.0)
 - [Download all project files](https://github.com/BarryCap/DotFight/archive/refs/heads/main.zip)
 - Extract folder from ZIP
 - Launch `dot.html` in a recent chromium-based browser (such as Chrome)
