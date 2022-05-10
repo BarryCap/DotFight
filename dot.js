@@ -442,10 +442,13 @@ function resetGame() {
     dot1Dead = false
     dot2Dead = false
     dot.setAttribute('opacity', 1)
+    dot.classList.remove('dead')
     dot1.setAttribute('opacity', 1)
     dot1.classList.remove('ghost')
+    dot1.classList.remove('dead')
     dot2.setAttribute('opacity', 1)
     dot2.classList.remove('ghost')
+    dot2.classList.remove('dead')
 
     $('evil-dots').innerHTML = ''
     $('count-down').innerHTML = ''
@@ -495,6 +498,7 @@ function launchGame() {
   function checkCollision() {
     if (evilDots.some(({ pos }) => dotPos[0] == pos[0] && dotPos[1] == pos[1])) {
       $('last-score').innerHTML = currentTime
+      dot.classList.add('dead')
       resetGame()
     }
   }
@@ -539,6 +543,7 @@ function launchGame2p() {
     function killDotIfCollide(dot, dotPos, dotDead, score) {
       if (!dotDead && evilDots.some(({ pos }) => dotPos[0] == pos[0] && dotPos[1] == pos[1])) {
         $(score).innerHTML = currentTime
+        dot.classList.add('dead')
         setTimeout(() => dot.classList.add('ghost'), 100)
         return true
       }

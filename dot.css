@@ -76,6 +76,20 @@ svg.bg-no-glow.bg-no-dist { background-image: url("bg-no-glow-no-dist.svg"); }
   transition: .2s;
 }
 
+@keyframes death {
+  50% {
+    stroke-width: 80;
+    stroke-opacity: 1;
+    opacity: 0;
+    filter: drop-shadow(0 0 20px #888);
+  }
+}
+.dead {
+  animation: death 1s ease-out;
+  stroke: #888;
+  stroke-opacity: 0;
+}
+
 .ghost {
   fill: #fff2;
   filter: none;
