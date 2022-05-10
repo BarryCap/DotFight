@@ -201,26 +201,64 @@ function optionsSelection({ key }) {
   if (menuSelectKeys.includes(key) && selectedOption == 'glow' && glowEffect) {
     $('tick-glow').setAttribute('opacity', 0)
     glowEffect = false
-    $('menu-pages').setAttribute('filter', 'url(#dot-disp)')
+    disableGlow()
   } else if (menuSelectKeys.includes(key) && selectedOption == 'dist' && distEffect) {
     $('tick-dist').setAttribute('opacity', 0)
     distEffect = false
-    $('dot-disp').setAttribute('baseFrequency', '0') // TODO make this work
+    disableDist()
   } else if (menuSelectKeys.includes(key) && selectedOption == 'glow' && glowEffect == false) {
     $('tick-glow').setAttribute('opacity', 1)
     glowEffect = true
-    $('menu-pages').setAttribute('filter', 'drop-shadow(0 0 20px #8ffc) url(#dot-disp)')
+    enableGlow()
   } else if (menuSelectKeys.includes(key) && selectedOption == 'dist' && distEffect == false) {
     $('tick-dist').setAttribute('opacity', 1)
     distEffect = true
+    enableDist()
   }
 }
 
-/** Change game quality */
-function changeQuality() {
-  if (glowEffect) {
-    $('dot-disp').remove
-  } else { }
+function disableGlow() {
+  $('menu-top-page-white').removeAttribute('filter')
+  $('menu-top-page-yellow').removeAttribute('filter')
+  $('menu-top-page-cyan').removeAttribute('filter')
+  $('menu-pages').setAttribute('filter', 'url(#dot-disp)')
+  $('credits-page-yellow').removeAttribute('filter')
+  $('credits-page-cyan').removeAttribute('filter')
+  $('dot').removeAttribute('filter')
+  $('dot1').removeAttribute('filter')
+  $('dot2').removeAttribute('filter')
+  $('count-down').removeAttribute('filter')
+  $('menu').classList.add('bg-no-glow')
+  $('board').classList.add('bg-no-glow')
+}
+
+function enableGlow() {
+  $('menu-top-page-white').setAttribute('filter', 'drop-shadow(0 0 20px #8ffc)')
+  $('menu-top-page-yellow').setAttribute('filter', 'drop-shadow(0 0 20px #ff0)')
+  $('menu-top-page-cyan').setAttribute('filter', 'drop-shadow(0 0 20px #0ff)')
+  $('menu-pages').setAttribute('filter', 'drop-shadow(0 0 20px #8ffc) url(#dot-disp)')
+  $('credits-page-yellow').setAttribute('filter', 'drop-shadow(0 0 20px #ff08)')
+  $('credits-page-cyan').setAttribute('filter', 'drop-shadow(0 0 20px #0ff8)')
+  $('dot').setAttribute('filter', 'drop-shadow(0 0 20px #8ff)')
+  $('dot1').setAttribute('filter', 'drop-shadow(0 0 20px #ff0)')
+  $('dot2').setAttribute('filter', 'drop-shadow(0 0 20px #0ff)')
+  $('count-down').setAttribute('filter', 'drop-shadow(0 0 20px #8ff) drop-shadow(0 0 20px #8ff8)')
+  $('menu').classList.remove('bg-no-glow')
+  $('board').classList.remove('bg-no-glow')
+}
+
+function disableDist() {
+  $('dot-turb').setAttribute('baseFrequency', '0')
+  $('body').classList.add('bg-no-dist')
+  $('menu').classList.add('bg-no-dist')
+  $('board').classList.add('bg-no-dist')
+}
+
+function enableDist() {
+  $('dot-turb').setAttribute('baseFrequency', '.01')
+  $('body').classList.remove('bg-no-dist')
+  $('menu').classList.remove('bg-no-dist')
+  $('board').classList.remove('bg-no-dist')
 }
 
 /** Generate an evil dot's random spawn position */
@@ -260,40 +298,46 @@ function createMove(pos) {
 
 /** Create evil dots */
 function evilDotSpawn() {
-  const filter = createNS('filter')
-  filter.setAttribute('id', `evil-dot-disp${currentEvilDotIndex}`)
+  const evilDot = {}
+  if (distEffect) {
+    const filter = createNS('filter')
+    filter.setAttribute('id', `evil-dot-disp${currentEvilDotIndex}`)
 
-  const feTurbulence = createNS('feTurbulence')
-  feTurbulence.setAttribute('type', 'fractalNoise')
-  feTurbulence.setAttribute('baseFrequency', .1)
-  feTurbulence.setAttribute('numOctaves', 16)
-  feTurbulence.setAttribute('result', 'fractal')
+    const feTurbulence = createNS('feTurbulence')
+    feTurbulence.setAttribute('type', 'fractalNoise')
+    feTurbulence.setAttribute('baseFrequency', .1)
+    feTurbulence.setAttribute('numOctaves', 16)
+    feTurbulence.setAttribute('result', 'fractal')
 
-  const feDisplacementMap = createNS('feDisplacementMap')
-  feDisplacementMap.setAttribute('in', 'SourceGraphic')
-  feDisplacementMap.setAttribute('in2', 'fractal')
-  feDisplacementMap.setAttribute('yChannelSelector', 'G')
-  feDisplacementMap.setAttribute('scale', 8)
+    const feDisplacementMap = createNS('feDisplacementMap')
+    feDisplacementMap.setAttribute('in', 'SourceGraphic')
+    feDisplacementMap.setAttribute('in2', 'fractal')
+    feDisplacementMap.setAttribute('yChannelSelector', 'G')
+    feDisplacementMap.setAttribute('scale', 8)
 
-  const animateTurbulence = createNS('animate')
-  animateTurbulence.setAttribute('attributeName', 'seed')
-  animateTurbulence.setAttribute('values', '1;1800')
-  animateTurbulence.setAttribute('dur', 60)
-  animateTurbulence.setAttribute('repeatCount', 'indefinite')
+    const animateTurbulence = createNS('animate')
+    animateTurbulence.setAttribute('attributeName', 'seed')
+    animateTurbulence.setAttribute('values', '1;1800')
+    animateTurbulence.setAttribute('dur', 60)
+    animateTurbulence.setAttribute('repeatCount', 'indefinite')
 
-  $('evil-dots-filters').appendChild(filter)
-  filter.appendChild(feTurbulence)
-  filter.appendChild(feDisplacementMap)
-  feTurbulence.appendChild(animateTurbulence)
+    $('evil-dots-filters').appendChild(filter)
+    filter.appendChild(feTurbulence)
+    filter.appendChild(feDisplacementMap)
+    feTurbulence.appendChild(animateTurbulence)
+    evilDot.feDisplacementMap = feDisplacementMap
+  }
 
   const evilDotG = createNS('g')
-  evilDotG.setAttribute('filter', `drop-shadow(0 0 20 #f00) url(#evil-dot-disp${currentEvilDotIndex})`)
-
-  const effectFixer = createNS('circle')
-  effectFixer.setAttribute('r', 160)
-  effectFixer.setAttribute('cx', '50%')
-  effectFixer.setAttribute('cy', '50%')
-  effectFixer.setAttribute('fill', '#f0f0')
+  if (glowEffect) {
+    evilDotG.setAttribute('filter', 'drop-shadow(0 0 20 #f00)')
+  }
+  if (distEffect) {
+    evilDotG.setAttribute('filter', `url(#evil-dot-disp${currentEvilDotIndex})`)
+  }
+  if (glowEffect && distEffect) {
+    evilDotG.setAttribute('filter', `drop-shadow(0 0 20 #f00) url(#evil-dot-disp${currentEvilDotIndex})`)
+  }
 
   const evilDotCircle = createNS('circle')
   evilDotCircle.setAttribute('id', `evil-dot${currentEvilDotIndex}`)
@@ -303,13 +347,20 @@ function evilDotSpawn() {
   evilDotCircle.setAttribute('cy', '50%')
 
   $('evil-dots').appendChild(evilDotG)
-  evilDotG.appendChild(effectFixer)
+  if (distEffect) {
+    const effectFixer = createNS('circle')
+    effectFixer.setAttribute('r', 160)
+    effectFixer.setAttribute('cx', '50%')
+    effectFixer.setAttribute('cy', '50%')
+    effectFixer.setAttribute('fill', '#f0f0')
+    evilDotG.appendChild(effectFixer)
+  }
   evilDotG.appendChild(evilDotCircle)
 
   const pos = createPos()
   const move = createMove(pos)
   setTransform(evilDotCircle, pos)
-  evilDots.push({ node: evilDotCircle, pos, group: evilDotG, move, feDisplacementMap })
+  evilDots.push({ node: evilDotCircle, pos, group: evilDotG, move, ...evilDot })
 
   if (currentEvilDotIndex <= nbEvilDots) {
     currentEvilDotIndex++
@@ -433,10 +484,12 @@ function launchGame() {
   }
 
   function checkDistance() {
-    evilDots.forEach(({ feDisplacementMap, pos }) => {
-      const distance = calcDistance(pos, dotPos)
-      feDisplacementMap.setAttribute('scale', dispScaleFromDistance(distance))
-    })
+    if (distEffect) {
+      evilDots.forEach(({ feDisplacementMap, pos }) => {
+        const distance = calcDistance(pos, dotPos)
+        feDisplacementMap.setAttribute('scale', dispScaleFromDistance(distance))
+      })
+    }
   }
 
   function checkCollision() {
@@ -472,12 +525,14 @@ function launchGame2p() {
   }
 
   function checkDistance() {
-    evilDots.forEach(({ feDisplacementMap, pos }) => {
-      const distance1 = !dot1Dead && calcDistance(pos, dot1Pos) || Infinity
-      const distance2 = !dot2Dead && calcDistance(pos, dot2Pos) || Infinity
-      const distance = Math.min(distance1, distance2)
-      feDisplacementMap.setAttribute('scale', dispScaleFromDistance(distance))
-    })
+    if (distEffect) {
+      evilDots.forEach(({ feDisplacementMap, pos }) => {
+        const distance1 = !dot1Dead && calcDistance(pos, dot1Pos) || Infinity
+        const distance2 = !dot2Dead && calcDistance(pos, dot2Pos) || Infinity
+        const distance = Math.min(distance1, distance2)
+        feDisplacementMap.setAttribute('scale', dispScaleFromDistance(distance))
+      })
+    }
   }
 
   function checkCollision() {

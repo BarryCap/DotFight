@@ -2,7 +2,7 @@
   color-scheme: dark;
 }
 body {
-  background: #000 calc(50% - 40px) calc(50% + 40px) url("dot-bg-dark.svg");
+  background: #000 calc(50% - 40px) calc(50% + 40px) url("bg-dark.svg");
   cursor: none;
   display: flex;
   align-items: center;
@@ -12,7 +12,7 @@ body {
   height: 100vh;
 }
 svg {
-  background: #000 40px 20px url("dot-bg.svg");
+  background: #000 40px 20px url("bg.svg");
   background-position: calc(50% - 40px) calc(50% + 40px);
   border-radius: 8px;
   fill: #fff;
@@ -21,6 +21,11 @@ svg {
   font-family: consolas, monospace;
   font-weight: bold;
 }
+
+body.bg-no-dist { background-image: url("bg-dark-no-dist.svg"); }
+svg.bg-no-glow { background-image: url("bg-no-glow.svg"); }
+svg.bg-no-dist { background-image: url("bg-no-dist.svg"); }
+svg.bg-no-glow.bg-no-dist { background-image: url("bg-no-glow-no-dist.svg"); }
 
 @keyframes drawing {
   0% { stroke-dashoffset: 32; }

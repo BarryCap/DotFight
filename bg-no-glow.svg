@@ -1,7 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2 2" width="160" height="160" fill="#333">
-  <defs>
-    <rect id="square" filter="url(#disp)" width="1" height="1" />
-  </defs>
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 2 2"
+  width="160"
+  height="160"
+  fill="#444"
+>
   <filter id="disp">
     <feTurbulence
       type="fractalNoise"
@@ -23,6 +26,6 @@
       scale="4"
     />
   </filter>
-  <use href="#square" />
+  <rect id="square" filter="url(#disp)" width="1" height="1" />
   <use href="#square" x="1" y="1" />
 </svg>

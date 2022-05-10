@@ -5,10 +5,11 @@
     <script src="dot.js"></script>
     <title>DotFight</title>
   </head>
-  <body>
+  <body id="body">
     <svg id="menu" viewBox="0 0 1280 1024">
       <filter id="dot-disp">
         <feTurbulence
+          id="dot-turb"
           type="fractalNoise"
           baseFrequency=".01"
           numOctaves="16"
@@ -38,6 +39,7 @@
       <rect width="100%" height="100%" fill="#0008" />
       <g id="menu-top-page" filter="url(#dot-disp)">
         <g
+          id="menu-top-page-white"
           filter="drop-shadow(0 0 20px #8ffc)"
           font-size="40"
         >
@@ -126,7 +128,7 @@
             stroke-width="16"
           />
         </g>
-        <g filter="drop-shadow(0 0 20px #ff0)">
+        <g id="menu-top-page-yellow" filter="drop-shadow(0 0 20px #ff0)">
           <circle r="320" cx="50%" cy="50%" fill="#f0f0" />
           <text
             id="p1-score"
@@ -140,7 +142,7 @@
             --
           </text>
         </g>
-        <g filter="drop-shadow(0 0 20px #0ff)">
+        <g id="menu-top-page-cyan" filter="drop-shadow(0 0 20px #0ff)">
           <circle r="320" cx="50%" cy="50%" fill="#f0f0" />
           <text
             id="p2-score"
@@ -168,6 +170,7 @@
               Game concept and creation
             </text>
             <text
+              id="credits-page-yellow"
               x="1080"
               y="443"
               text-anchor="end"
@@ -180,6 +183,7 @@
               Help with programming
             </text>
             <text
+              id="credits-page-cyan"
               x="1080"
               y="523"
               text-anchor="end"
@@ -278,7 +282,7 @@
         />
       </rect>
     </svg>
-    <svg viewBox="0 0 1280 1024">
+    <svg id="board" viewBox="0 0 1280 1024">
       <g id="evil-dots-filters"></g>
       <g id="evil-dots"></g>
       <g filter="url(#dot-disp)">
