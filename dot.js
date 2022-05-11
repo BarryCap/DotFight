@@ -437,11 +437,12 @@ function updateEvilDot(evilDots) {
 function resetGame() {
   $('dot-disp-map').setAttribute('scale', 256)
   $('high-score').innerHTML = highScore
+  clearTimeout(creationTimeout)
+  clearInterval(evilDotsMove)
+  clearInterval(timerInterval)
+  document.onkeydown = null
 
   setTimeout(() => {
-    clearTimeout(creationTimeout)
-    clearInterval(evilDotsMove)
-    clearInterval(timerInterval)
 
     evilDots = []
     currentEvilDotIndex = 1
@@ -557,7 +558,9 @@ function launchGame2p() {
     function killDotIfCollide(dot, dotPos, dotDead, score) {
       if (!dotDead && evilDots.some(({ pos }) => dotPos[0] == pos[0] && dotPos[1] == pos[1])) {
         $(score).innerHTML = currentTime
-        audioGhost()
+        if (!dot1Dead && !dot2Dead) {
+          audioGhost()
+        }
         dot.classList.add('dead')
         setTimeout(() => dot.classList.add('ghost'), 100)
         return true
@@ -585,6 +588,7 @@ function launchGame2p() {
   }, 1000)
 }
 
+/** Audio */
 function audioMainTheme() {
   audio = new Audio('audio/main-theme.mp3')
   audio.play()
