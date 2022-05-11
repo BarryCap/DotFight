@@ -80,6 +80,9 @@ document.onkeydown = menuSelection
 
 /** Choose menu options */
 function menuSelection({ key }) {
+  if (menuMoveXKeys.includes(key) || menuMoveYKeys.includes(key)) {
+    audioDotMove()
+  }
   const mS = $('menu-selection')
   if (selection == '1p') {
     if (menuMoveXKeys.includes(key)) {
@@ -189,11 +192,13 @@ function optionsSelection({ key }) {
   const oS = $('options-selection')
   if (selectedOption == 'glow') {
     if (menuMoveYKeys.includes(key)) {
+      audioDotMove()
       oS.setAttribute('y', 590)
       selectedOption = 'dist'
     }
   } else if (selectedOption == 'dist') {
     if (menuMoveYKeys.includes(key)) {
+      audioDotMove()
       oS.setAttribute('y', 350)
       selectedOption = 'glow'
     }
@@ -298,6 +303,7 @@ function createMove(pos) {
 
 /** Create evil dots */
 function evilDotSpawn() {
+  audioEvilDot()
   const evilDot = {}
   if (distEffect) {
     const filter = createNS('filter')
@@ -373,21 +379,25 @@ function evilDotSpawn() {
 function moveDot(key, layout, dot, dotPos, otherDotPos) {
   if (layout.up.includes(key) && dotPos[1] >= -5) {
     if (check2pCollision(dot, dotPos, [0, -1], otherDotPos)) {
+      audioDotMove()
       dotPos[1] -= 1
       setTransform(dot, dotPos)
     }
   } else if (layout.down.includes(key) && dotPos[1] <= 5) {
     if (check2pCollision(dot, dotPos, [0, 1], otherDotPos)) {
+      audioDotMove()
       dotPos[1] += 1
       setTransform(dot, dotPos)
     }
   } else if (layout.left.includes(key) && dotPos[0] >= -7) {
     if (check2pCollision(dot, dotPos, [-1, 0], otherDotPos)) {
+      audioDotMove()
       dotPos[0] -= 1
       setTransform(dot, dotPos)
     }
   } else if (layout.right.includes(key) && dotPos[0] <= 7) {
     if (check2pCollision(dot, dotPos, [1, 0], otherDotPos)) {
+      audioDotMove()
       dotPos[0] += 1
       setTransform(dot, dotPos)
     }
@@ -397,6 +407,7 @@ function moveDot(key, layout, dot, dotPos, otherDotPos) {
 function check2pCollision(dotMoving, dotPosMoving, move, dotPosStatic) {
   if (!twoPlayers) return true
   if (dotPosMoving[0] + move[0] == dotPosStatic[0] && dotPosMoving[1] + move[1] == dotPosStatic[1]) {
+    audioDotBlocked()
     setTransform(dotMoving, [dotPosMoving[0] + move[0] * .5, dotPosMoving[1] + move[1] * .5])
     setTimeout(() => {
       setTransform(dotMoving, dotPosMoving)
@@ -475,6 +486,7 @@ function initialSetup() {
 
 function launchGame() {
   initialSetup()
+  audioMainTheme()
   dot1.setAttribute('opacity', 0)
   dot2.setAttribute('opacity', 0)
   document.onkeydown = move
@@ -498,6 +510,7 @@ function launchGame() {
   function checkCollision() {
     if (evilDots.some(({ pos }) => dotPos[0] == pos[0] && dotPos[1] == pos[1])) {
       $('last-score').innerHTML = currentTime
+      audioDeath()
       dot.classList.add('dead')
       resetGame()
     }
@@ -517,6 +530,7 @@ function launchGame() {
 
 function launchGame2p() {
   initialSetup()
+  audioMainTheme()
   dot.setAttribute('opacity', 0)
   document.onkeydown = move
 
@@ -543,6 +557,7 @@ function launchGame2p() {
     function killDotIfCollide(dot, dotPos, dotDead, score) {
       if (!dotDead && evilDots.some(({ pos }) => dotPos[0] == pos[0] && dotPos[1] == pos[1])) {
         $(score).innerHTML = currentTime
+        audioGhost()
         dot.classList.add('dead')
         setTimeout(() => dot.classList.add('ghost'), 100)
         return true
@@ -552,7 +567,10 @@ function launchGame2p() {
     dot1Dead = killDotIfCollide(dot1, dot1Pos, dot1Dead, 'p1-score')
     dot2Dead = killDotIfCollide(dot2, dot2Pos, dot2Dead, 'p2-score')
 
-    if (dot1Dead && dot2Dead) resetGame()
+    if (dot1Dead && dot2Dead) {
+      audioDeath()
+      resetGame()
+    }
   }
 
   evilDotsMove = setInterval(() => {
@@ -565,4 +583,25 @@ function launchGame2p() {
     $('count-down').innerHTML = ++currentTime
     if (currentTime > highScore) highScore = currentTime
   }, 1000)
+}
+
+function audioMainTheme() {
+  audio = new Audio('audio/main-theme.mp3')
+  audio.play()
+  audio.loop = true
+}
+function audioDotMove() {
+  new Audio('audio/dot-move.wav').play()
+}
+function audioDotBlocked() {
+  new Audio('audio/dot-blocked.mp3').play()
+}
+function audioEvilDot() {
+  new Audio('audio/evil-dot-spawn.mp3').play()
+}
+function audioGhost() {
+  new Audio('audio/ghost.mp3').play()
+}
+function audioDeath() {
+  new Audio('audio/death.wav').play()
 }
