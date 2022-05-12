@@ -161,14 +161,18 @@ function menuSelection({ key }) {
     twoPlayers = true
   }
   if (menuSelectKeys.includes(key) && selection == '1p') {
+    audioClick()
     launchGame()
   } else if (menuSelectKeys.includes(key) && selection == '2p') {
+    audioClick()
     launchGame2p()
   } else if (menuSelectKeys.includes(key) && selection == 'credits') {
+    audioClick()
     $('menu-top-page').setAttribute('opacity', 0)
     $('credits-page').setAttribute('opacity', 1)
     document.onkeydown = optionsSelection
   } else if (menuSelectKeys.includes(key) && selection == 'options') {
+    audioClick()
     $('menu-top-page').setAttribute('opacity', 0)
     $('options-page').setAttribute('opacity', 1)
     document.onkeydown = optionsSelection
@@ -204,18 +208,22 @@ function optionsSelection({ key }) {
     }
   }
   if (menuSelectKeys.includes(key) && selectedOption == 'glow' && glowEffect) {
+    audioClick()
     $('tick-glow').setAttribute('opacity', 0)
     glowEffect = false
     disableGlow()
   } else if (menuSelectKeys.includes(key) && selectedOption == 'dist' && distEffect) {
+    audioClick()
     $('tick-dist').setAttribute('opacity', 0)
     distEffect = false
     disableDist()
   } else if (menuSelectKeys.includes(key) && selectedOption == 'glow' && glowEffect == false) {
+    audioClick()
     $('tick-glow').setAttribute('opacity', 1)
     glowEffect = true
     enableGlow()
   } else if (menuSelectKeys.includes(key) && selectedOption == 'dist' && distEffect == false) {
+    audioClick()
     $('tick-dist').setAttribute('opacity', 1)
     distEffect = true
     enableDist()
@@ -595,7 +603,9 @@ function audioMainTheme() {
   audio.loop = true
 }
 function audioDotMove() {
-  new Audio('audio/dot-move.wav').play()
+  audio = new Audio('audio/dot-move.mp3')
+  audio.play()
+  audio.volume = .25
 }
 function audioDotBlocked() {
   new Audio('audio/dot-blocked.mp3').play()
@@ -607,5 +617,8 @@ function audioGhost() {
   new Audio('audio/ghost.mp3').play()
 }
 function audioDeath() {
-  new Audio('audio/death.wav').play()
+  new Audio('audio/death.mp3').play()
+}
+function audioClick() {
+  new Audio('audio/click.mp3').play()
 }
