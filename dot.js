@@ -185,10 +185,12 @@ let distEffect = true
 
 function optionsSelection({ key }) {
   if (menuEscape.includes(key) && selection == 'credits') {
+    audioEscape()
     $('menu-top-page').setAttribute('opacity', 1)
     $('credits-page').setAttribute('opacity', 0)
     document.onkeydown = menuSelection
   } else if (menuEscape.includes(key) && selection == 'options') {
+    audioEscape()
     $('menu-top-page').setAttribute('opacity', 1)
     $('options-page').setAttribute('opacity', 0)
     document.onkeydown = menuSelection
@@ -482,6 +484,7 @@ function resetGame() {
 }
 
 function initialSetup() {
+  audioMainTheme()
   $('menu').setAttribute('opacity', 0)
   $('count-down').classList.add('count-down')
   $('dot-disp-map').setAttribute('scale', 256)
@@ -495,7 +498,6 @@ function initialSetup() {
 
 function launchGame() {
   initialSetup()
-  audioMainTheme()
   dot1.setAttribute('opacity', 0)
   dot2.setAttribute('opacity', 0)
   document.onkeydown = move
@@ -539,7 +541,6 @@ function launchGame() {
 
 function launchGame2p() {
   initialSetup()
-  audioMainTheme()
   dot.setAttribute('opacity', 0)
   document.onkeydown = move
 
@@ -621,4 +622,10 @@ function audioDeath() {
 }
 function audioClick() {
   new Audio('audio/click.mp3').play()
+}
+function audioEscape() {
+  audio = new Audio('audio/death.mp3')
+  audio.play()
+  audio.playbackRate = 3
+  audio.volume = .5
 }
