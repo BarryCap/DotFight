@@ -76,7 +76,7 @@ let evilDots = []
 
 let selection = '1p'
 
-document.onkeydown = menuSelection
+document.onkeydown = endSplashScreen
 
 /** Choose menu options */
 function menuSelection({ key }) {
@@ -484,7 +484,6 @@ function resetGame() {
 }
 
 function initialSetup() {
-  audioMainTheme()
   $('menu').setAttribute('opacity', 0)
   $('count-down').classList.add('count-down')
   $('dot-disp-map').setAttribute('scale', 256)
@@ -595,6 +594,16 @@ function launchGame2p() {
     $('count-down').innerHTML = ++currentTime
     if (currentTime > highScore) highScore = currentTime
   }, 1000)
+}
+
+/** Splash screen */
+function endSplashScreen() {
+  $('splash-screen-overlay').remove()
+  $('splash-screen').remove()
+  $('menu-intro-rect').classList.add('menu-intro')
+  audioMainTheme()
+  audioClick()
+  document.onkeydown = menuSelection
 }
 
 /** Audio */

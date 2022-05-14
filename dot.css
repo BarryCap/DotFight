@@ -52,10 +52,28 @@ svg.bg-no-glow.bg-no-dist { background-image: url("bg-no-glow-no-dist.svg"); }
   transition: .2s;
 }
 
+@keyframes menu-intro {
+  0% { opacity: 1; }
+}
+.menu-intro {
+  animation: menu-intro 2s;
+}
+
+#splash-screen {
+  position: absolute;
+  transition: .2s;
+}
+#splash-screen-overlay {
+  background: #000;
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+}
+
 #dot, #dot1, #dot2 {
   transition: .1s;
 }
-#dot2 {
+#dot2, #dot-fight-yellow, #dot-fight-cyan {
   mix-blend-mode: difference;
 }
 #evil-dots *,
@@ -72,7 +90,9 @@ svg.bg-no-glow.bg-no-dist { background-image: url("bg-no-glow-no-dist.svg"); }
 #credits-page,
 #options-page,
 #tick-glow,
-#tick-dist {
+#tick-dist,
+#splash-screen,
+#splash-screen-overlay {
   transition: .2s;
 }
 
