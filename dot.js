@@ -669,3 +669,25 @@ function audioEscape() {
   audio.playbackRate = 3
   audio.volume = .5
 }
+
+let gamepadIndex
+window.addEventListener('gamepadconnected', (event) => {
+  gamepadIndex = event.gamepad.index
+})
+
+let splashScreen = true
+
+setInterval(() => {
+  if (gamepadIndex !== undefined) {
+    const myGamepad = navigator.getGamepads()[gamepadIndex]
+    myGamepad.buttons.map(e => e.pressed).forEach((isPressed, buttonIndex) => {
+      if (isPressed) {
+        console.log(buttonIndex)
+      }
+      if (isPressed && splashScreen == true) {
+        endSplashScreen()
+        splashScreen = false
+      }
+    })
+  }
+}, 10)
