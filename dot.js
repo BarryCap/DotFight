@@ -16,6 +16,8 @@ const evilDotsSpeed = 400
 /** Keyboard layout */
 const menuMoveXKeys = ['a', 'd', 'q', 'ArrowLeft', 'ArrowRight', 'Tab']
 const menuMoveYKeys = ['w', 's', 'z', 'ArrowUp', 'ArrowDown', 'Tab']
+const menuMoveUpKeys = ['w', 'z', 'ArrowUp']
+const menuMoveDownKeys = ['s', 'ArrowDown', 'Tab']
 const menuSelectKeys = [' ', 'Enter']
 const menuEscape = ['Escape', 'Backspace', 'Home']
 const layoutMovement1p = {
@@ -182,6 +184,7 @@ function menuSelection({ key }) {
 let selectedOption = 'glow'
 let glowEffect = true
 let distEffect = true
+let sounds = true
 
 function optionsSelection({ key }) {
   if (menuEscape.includes(key) && selection == 'credits') {
@@ -197,16 +200,34 @@ function optionsSelection({ key }) {
   }
   const oS = $('options-selection')
   if (selectedOption == 'glow') {
-    if (menuMoveYKeys.includes(key)) {
+    if (menuMoveDownKeys.includes(key)) {
       audioDotMove()
-      oS.setAttribute('y', 590)
+      oS.setAttribute('y', 510)
       selectedOption = 'dist'
+    } else if (menuMoveUpKeys.includes(key)) {
+      audioDotMove()
+      oS.setAttribute('y', 670)
+      selectedOption = 'sounds'
     }
   } else if (selectedOption == 'dist') {
-    if (menuMoveYKeys.includes(key)) {
+    if (menuMoveDownKeys.includes(key)) {
+      audioDotMove()
+      oS.setAttribute('y', 670)
+      selectedOption = 'sounds'
+    } else if (menuMoveUpKeys.includes(key)) {
       audioDotMove()
       oS.setAttribute('y', 350)
       selectedOption = 'glow'
+    }
+  } else if (selectedOption == 'sounds') {
+    if (menuMoveDownKeys.includes(key)) {
+      audioDotMove()
+      oS.setAttribute('y', 350)
+      selectedOption = 'glow'
+    } else if (menuMoveUpKeys.includes(key)) {
+      audioDotMove()
+      oS.setAttribute('y', 510)
+      selectedOption = 'dist'
     }
   }
   if (menuSelectKeys.includes(key) && selectedOption == 'glow' && glowEffect) {
@@ -219,16 +240,26 @@ function optionsSelection({ key }) {
     $('tick-dist').setAttribute('opacity', 0)
     distEffect = false
     disableDist()
-  } else if (menuSelectKeys.includes(key) && selectedOption == 'glow' && glowEffect == false) {
+  } else if (menuSelectKeys.includes(key) && selectedOption == 'sounds' && sounds) {
+    audioClick()
+    $('tick-sounds').setAttribute('opacity', 0)
+    sounds = false
+    //disableSounds()
+  } else if (menuSelectKeys.includes(key) && selectedOption == 'glow' && !glowEffect) {
     audioClick()
     $('tick-glow').setAttribute('opacity', 1)
     glowEffect = true
     enableGlow()
-  } else if (menuSelectKeys.includes(key) && selectedOption == 'dist' && distEffect == false) {
+  } else if (menuSelectKeys.includes(key) && selectedOption == 'dist' && !distEffect) {
     audioClick()
     $('tick-dist').setAttribute('opacity', 1)
     distEffect = true
     enableDist()
+  } else if (menuSelectKeys.includes(key) && selectedOption == 'sounds' && !sounds) {
+    audioClick()
+    $('tick-sounds').setAttribute('opacity', 1)
+    sounds = true
+    //enableSounds()
   }
 }
 

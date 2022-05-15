@@ -15,11 +15,11 @@ svg {
   background: #000 40px 20px url("bg.svg");
   background-position: calc(50% - 40px) calc(50% + 40px);
   border-radius: 8px;
+  font-family: consolas, monospace;
+  font-weight: bold;
   fill: #fff;
   width: 1280px;
   height: 1024px;
-  font-family: consolas, monospace;
-  font-weight: bold;
 }
 
 body.bg-no-dist { background-image: url("bg-dark-no-dist.svg"); }
@@ -89,8 +89,6 @@ svg.bg-no-glow.bg-no-dist { background-image: url("bg-no-glow-no-dist.svg"); }
 #menu-top-page,
 #credits-page,
 #options-page,
-#tick-glow,
-#tick-dist,
 #splash-screen,
 #splash-screen-overlay {
   transition: .2s;
@@ -98,10 +96,10 @@ svg.bg-no-glow.bg-no-dist { background-image: url("bg-no-glow-no-dist.svg"); }
 
 @keyframes death {
   50% {
-    stroke-width: 80;
-    stroke-opacity: 1;
     opacity: 0;
     filter: drop-shadow(0 0 20px #888);
+    stroke-opacity: 1;
+    stroke-width: 80;
   }
 }
 .dead {
@@ -123,4 +121,13 @@ svg.bg-no-glow.bg-no-dist { background-image: url("bg-no-glow-no-dist.svg"); }
 .count-down {
   animation: count-down-fill 10s;
   transform: translateX(21px);
+}
+
+.tick {
+  rx: .25;
+  stroke: #fff;
+  stroke-width: 16;
+  x: 310;
+  width: 20px;
+  height: 20px;
 }
