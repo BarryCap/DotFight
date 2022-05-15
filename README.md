@@ -9,7 +9,7 @@ The project wasn’t on GitHub at first (started on the 27<sup>th</sup> of April
 
 This is an SVG/HTML/CSS/JS project (without using any libraries), same as most of my recent ones.
 
-## How to run the game as an application (version 0.0)
+## How to run the game as an application on Windows (version 0.0)
 - [Download ZIP](https://github.com/BarryCap/DotFight/releases/download/v0.0/dot-fight-win_x64.zip)
 - Extract files from ZIP
 - Launch `dot-fight-win_x64.exe`
