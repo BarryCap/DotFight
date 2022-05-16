@@ -1,74 +1,22 @@
-/** Technical constants */
-const scaleFactor = 80
-const dispScaleFromDistance = (dist) => 128 / (dist || .75)
-
-/** Game constants */
-const nbEvilDots = 8096
-const initDotPosX = 0
-const initDotPosY = 0
-const initDot1PosX = -2
-const initDot1PosY = 0
-const initDot2PosX = 2
-const initDot2PosY = 0
-const initTimeBetweenSpawns = 1000
-const evilDotsSpeed = 400
-
-/** Keyboard layout */
-const menuMoveXKeys = ['a', 'd', 'q', 'ArrowLeft', 'ArrowRight', 'Tab']
-const menuMoveYKeys = ['w', 's', 'z', 'ArrowUp', 'ArrowDown', 'Tab']
-const menuMoveUpKeys = ['w', 'z', 'ArrowUp']
-const menuMoveDownKeys = ['s', 'ArrowDown', 'Tab']
-const menuSelectKeys = [' ', 'Enter']
-const menuEscape = ['Escape', 'Backspace', 'Home']
-const layoutMovement1p = {
-  up: ['w', 'z', 'ArrowUp'],
-  down: ['s', 'ArrowDown'],
-  left: ['a', 'q', 'ArrowLeft'],
-  right: ['d', 'ArrowRight']
-}
-const layoutMovement2p1 = {
-  up: ['w', 'z'],
-  down: ['s'],
-  left: ['a', 'q'],
-  right: ['d']
-}
-const layoutMovement2p2 = {
-  up: ['ArrowUp'],
-  down: ['ArrowDown'],
-  left: ['ArrowLeft'],
-  right: ['ArrowRight']
-}
-
-/** Utils functions */
-const $ = (id) => document.getElementById(id)
-const setTransform = (node, [x, y]) => node.setAttribute('transform', `translate(${x * scaleFactor} ${y * scaleFactor})`)
-const createNS = (type) => document.createElementNS('http://www.w3.org/2000/svg', type)
-const calcDistance = (pos1, pos2) => ((pos1[0] - pos2[0]) ** 2 + (pos1[1] - pos2[1]) ** 2) ** .5
-
-let highScore = 0
-
-let twoPlayers = false
-let credits = false
-let options = false
-
+/** Init dots */
 let dot = null
 let dot1 = null
 let dot2 = null
-
-// Init dots
 setTimeout(() => {
   dot = $('dot')
   dot1 = $('dot1')
   dot2 = $('dot2')
 })
 
+/** Init game values */
+let highScore = 0
+let twoPlayers = false
 let dotPos = [initDotPosX, initDotPosY]
 let dot1Pos = [initDot1PosX, initDot1PosY]
 let dot2Pos = [initDot2PosX, initDot2PosY]
 let dot1Dead = false
 let dot2Dead = false
 let currentTime = 0
-
 let currentEvilDotIndex = 1
 let timeBetweenSpawns = initTimeBetweenSpawns
 let creationTimeout = null
@@ -76,194 +24,118 @@ let evilDotsMove = null
 let timerInterval = null
 let evilDots = []
 
-let selection = '1p'
+let selection = initMenuSelection
+let credits = false
+let options = false
 
+/** Splash screen */
 document.onkeydown = endSplashScreen
+function endSplashScreen () {
+  $('splash-screen-overlay').remove()
+  $('splash-screen').remove()
+  $('menu-intro-rect').classList.add('menu-intro')
+  createAudio(AUDIO_MAIN_THEME, 1, true).play()
+  createAudio(AUDIO_CLICK).play()
+  document.onkeydown = menuSelection
+}
 
 /** Choose menu options */
-function menuSelection({ key }) {
-  if (menuMoveXKeys.includes(key) || menuMoveYKeys.includes(key)) {
-    audioDotMove()
-  }
-  const mS = $('menu-selection')
-  if (selection == '1p') {
-    if (menuMoveXKeys.includes(key)) {
-      mS.setAttribute('x', 720)
-      mS.setAttribute('y', 712)
-      mS.setAttribute('width', 240)
-      mS.setAttribute('height', 160)
-      selection = '2p'
-    } else if (menuMoveYKeys.includes(key)) {
-      mS.setAttribute('x', 100)
-      mS.setAttribute('y', 852)
-      mS.setAttribute('width', 120)
-      mS.setAttribute('height', 120)
-      selection = 'credits'
+function menuSelection ({ key }) {
+  if (menuMoveKeys.includes(key)) {
+    createAudio(AUDIO_DOT_MOVE, .25)
+    selection = menuNavigation[selection][menuMoveXKeys.includes(key) ? 'x' : 'y']
+    const mS = $('menu-selection')
+    chooseMenuOption(mS, selection, menuOptions)
+
+    function change2p () {
+      $('hyphen').setAttribute('opacity', +twoPlayers)
+      $('left-menu-title').setAttribute('opacity', +!twoPlayers)
+      $('right-menu-title').setAttribute('opacity', +!twoPlayers)
+      $('last-score').setAttribute('opacity', +!twoPlayers)
+      $('high-score').setAttribute('opacity', +!twoPlayers)
+      $('p1-score').setAttribute('opacity', +twoPlayers)
+      $('p2-score').setAttribute('opacity', +twoPlayers)
     }
-  } else if (selection == '2p') {
-    if (menuMoveXKeys.includes(key)) {
-      mS.setAttribute('x', 320)
-      mS.setAttribute('y', 712)
-      mS.setAttribute('width', 240)
-      mS.setAttribute('height', 160)
-      selection = '1p'
-    } else if (menuMoveYKeys.includes(key)) {
-      mS.setAttribute('x', 1060)
-      mS.setAttribute('y', 852)
-      mS.setAttribute('width', 120)
-      mS.setAttribute('height', 120)
-      selection = 'options'
-    }
-  } else if (selection == 'credits') {
-    if (menuMoveXKeys.includes(key)) {
-      mS.setAttribute('x', 1060)
-      mS.setAttribute('y', 852)
-      mS.setAttribute('width', 120)
-      mS.setAttribute('height', 120)
-      selection = 'options'
-    } else if (menuMoveYKeys.includes(key)) {
-      mS.setAttribute('x', 320)
-      mS.setAttribute('y', 712)
-      mS.setAttribute('width', 240)
-      mS.setAttribute('height', 160)
-      selection = '1p'
-    }
-  } else if (selection == 'options') {
-    if (menuMoveXKeys.includes(key)) {
-      mS.setAttribute('x', 100)
-      mS.setAttribute('y', 852)
-      mS.setAttribute('width', 120)
-      mS.setAttribute('height', 120)
-      selection = 'credits'
-    } else if (menuMoveYKeys.includes(key)) {
-      mS.setAttribute('x', 720)
-      mS.setAttribute('y', 712)
-      mS.setAttribute('width', 240)
-      mS.setAttribute('height', 160)
-      selection = '2p'
+
+    if (selection == ONE_PLAYER) {
+      twoPlayers = false
+      change2p()
+    } else if (selection == TWO_PLAYER) {
+      twoPlayers = true
+      change2p()
     }
   }
-  if (selection == '1p') {
-    $('hyphen').setAttribute('opacity', 0)
-    $('left-menu-title').setAttribute('opacity', 1)
-    $('right-menu-title').setAttribute('opacity', 1)
-    $('last-score').setAttribute('opacity', 1)
-    $('high-score').setAttribute('opacity', 1)
-    $('p1-score').setAttribute('opacity', 0)
-    $('p2-score').setAttribute('opacity', 0)
-    twoPlayers = false
-  } else if (selection == '2p') {
-    $('hyphen').setAttribute('opacity', 1)
-    $('left-menu-title').setAttribute('opacity', 0)
-    $('right-menu-title').setAttribute('opacity', 0)
-    $('last-score').setAttribute('opacity', 0)
-    $('high-score').setAttribute('opacity', 0)
-    $('p1-score').setAttribute('opacity', 1)
-    $('p2-score').setAttribute('opacity', 1)
-    twoPlayers = true
-  }
-  if (menuSelectKeys.includes(key) && selection == '1p') {
-    audioClick()
-    launchGame()
-  } else if (menuSelectKeys.includes(key) && selection == '2p') {
-    audioClick()
-    launchGame2p()
-  } else if (menuSelectKeys.includes(key) && selection == 'credits') {
-    audioClick()
-    $('menu-top-page').setAttribute('opacity', 0)
-    $('credits-page').setAttribute('opacity', 1)
-    document.onkeydown = optionsSelection
-  } else if (menuSelectKeys.includes(key) && selection == 'options') {
-    audioClick()
-    $('menu-top-page').setAttribute('opacity', 0)
-    $('options-page').setAttribute('opacity', 1)
-    document.onkeydown = optionsSelection
+
+  if (menuSelectKeys.includes(key)) {
+    createAudio(AUDIO_CLICK).play()
+    if (selection == ONE_PLAYER) {
+      launchGame()
+    } else if (selection == TWO_PLAYER) {
+      launchGame2p()
+    } else if (selection == CREDITS) {
+      $('menu-top-page').setAttribute('opacity', 0)
+      $('credits-page').setAttribute('opacity', 1)
+      document.onkeydown = optionsSelection
+    } else if (selection == OPTIONS) {
+      $('menu-top-page').setAttribute('opacity', 0)
+      $('options-page').setAttribute('opacity', 1)
+      document.onkeydown = optionsSelection
+    }
   }
 }
 
-let selectedOption = 'glow'
+let optionSelected = initOptionSelection
 let glowEffect = true
 let distEffect = true
 let sounds = true
 
-function optionsSelection({ key }) {
-  if (menuEscape.includes(key) && selection == 'credits') {
-    audioEscape()
+function optionsSelection ({ key }) {
+  if (menuEscape.includes(key)) {
+    createAudio(AUDIO_DEATH, .5, false, 3).play()
     $('menu-top-page').setAttribute('opacity', 1)
     $('credits-page').setAttribute('opacity', 0)
-    document.onkeydown = menuSelection
-  } else if (menuEscape.includes(key) && selection == 'options') {
-    audioEscape()
-    $('menu-top-page').setAttribute('opacity', 1)
     $('options-page').setAttribute('opacity', 0)
     document.onkeydown = menuSelection
   }
-  const oS = $('options-selection')
-  if (selectedOption == 'glow') {
-    if (menuMoveDownKeys.includes(key)) {
-      audioDotMove()
-      oS.setAttribute('y', 510)
-      selectedOption = 'dist'
-    } else if (menuMoveUpKeys.includes(key)) {
-      audioDotMove()
-      oS.setAttribute('y', 670)
-      selectedOption = 'sounds'
-    }
-  } else if (selectedOption == 'dist') {
-    if (menuMoveDownKeys.includes(key)) {
-      audioDotMove()
-      oS.setAttribute('y', 670)
-      selectedOption = 'sounds'
-    } else if (menuMoveUpKeys.includes(key)) {
-      audioDotMove()
-      oS.setAttribute('y', 350)
-      selectedOption = 'glow'
-    }
-  } else if (selectedOption == 'sounds') {
-    if (menuMoveDownKeys.includes(key)) {
-      audioDotMove()
-      oS.setAttribute('y', 350)
-      selectedOption = 'glow'
-    } else if (menuMoveUpKeys.includes(key)) {
-      audioDotMove()
-      oS.setAttribute('y', 510)
-      selectedOption = 'dist'
-    }
+
+  if (menuMoveXKeys.includes(key)) {
+    createAudio(AUDIO_DOT_MOVE, .25)
+    optionSelected = optionMenuNavigation[optionSelected][menuMoveUpKeys.includes(key) ? 'up' : 'down']
+    const oS = $('options-selection')
+    chooseMenuOption(oS, optionSelected, optionMenuOptions)
   }
-  if (menuSelectKeys.includes(key) && selectedOption == 'glow' && glowEffect) {
-    audioClick()
-    $('tick-glow').setAttribute('opacity', 0)
-    glowEffect = false
-    disableGlow()
-  } else if (menuSelectKeys.includes(key) && selectedOption == 'dist' && distEffect) {
-    audioClick()
-    $('tick-dist').setAttribute('opacity', 0)
-    distEffect = false
-    disableDist()
-  } else if (menuSelectKeys.includes(key) && selectedOption == 'sounds' && sounds) {
-    audioClick()
-    $('tick-sounds').setAttribute('opacity', 0)
-    sounds = false
-    //disableSounds()
-  } else if (menuSelectKeys.includes(key) && selectedOption == 'glow' && !glowEffect) {
-    audioClick()
-    $('tick-glow').setAttribute('opacity', 1)
-    glowEffect = true
-    enableGlow()
-  } else if (menuSelectKeys.includes(key) && selectedOption == 'dist' && !distEffect) {
-    audioClick()
-    $('tick-dist').setAttribute('opacity', 1)
-    distEffect = true
-    enableDist()
-  } else if (menuSelectKeys.includes(key) && selectedOption == 'sounds' && !sounds) {
-    audioClick()
-    $('tick-sounds').setAttribute('opacity', 1)
-    sounds = true
-    //enableSounds()
+
+  if (menuSelectKeys.includes(key)) {
+    createAudio(AUDIO_CLICK).play()
+    if (optionSelected == 'glow' && glowEffect) {
+      $('tick-glow').setAttribute('opacity', 0)
+      glowEffect = false
+      disableGlow()
+    } else if (optionSelected == 'dist' && distEffect) {
+      $('tick-dist').setAttribute('opacity', 0)
+      distEffect = false
+      disableDist()
+    } else if (optionSelected == 'sounds' && sounds) {
+      $('tick-sounds').setAttribute('opacity', 0)
+      sounds = false
+      disableSounds()
+    } else if (optionSelected == 'glow' && !glowEffect) {
+      $('tick-glow').setAttribute('opacity', 1)
+      glowEffect = true
+      enableGlow()
+    } else if (optionSelected == 'dist' && !distEffect) {
+      $('tick-dist').setAttribute('opacity', 1)
+      distEffect = true
+      enableDist()
+    } else if (optionSelected == 'sounds' && !sounds) {
+      $('tick-sounds').setAttribute('opacity', 1)
+      sounds = true
+      enableSounds()
+    }
   }
 }
 
-function disableGlow() {
+function disableGlow () {
   $('menu-top-page-white').removeAttribute('filter')
   $('menu-top-page-yellow').removeAttribute('filter')
   $('menu-top-page-cyan').removeAttribute('filter')
@@ -278,7 +150,7 @@ function disableGlow() {
   $('board').classList.add('bg-no-glow')
 }
 
-function enableGlow() {
+function enableGlow () {
   $('menu-top-page-white').setAttribute('filter', 'drop-shadow(0 0 20 #8ffc)')
   $('menu-top-page-yellow').setAttribute('filter', 'drop-shadow(0 0 20 #ff0)')
   $('menu-top-page-cyan').setAttribute('filter', 'drop-shadow(0 0 20 #0ff)')
@@ -293,22 +165,30 @@ function enableGlow() {
   $('board').classList.remove('bg-no-glow')
 }
 
-function disableDist() {
+function disableDist () {
   $('dot-turb').setAttribute('baseFrequency', '0')
   $('body').classList.add('bg-no-dist')
   $('menu').classList.add('bg-no-dist')
   $('board').classList.add('bg-no-dist')
 }
 
-function enableDist() {
+function enableDist () {
   $('dot-turb').setAttribute('baseFrequency', '.01')
   $('body').classList.remove('bg-no-dist')
   $('menu').classList.remove('bg-no-dist')
   $('board').classList.remove('bg-no-dist')
 }
 
+function disableSounds () {
+
+}
+
+function enableSounds () {
+
+}
+
 /** Generate an evil dot's random spawn position */
-function createPos() {
+function createPos () {
   if (Math.random() > .5) {
     if (Math.random() > .5) {
       return [-9, Math.floor((Math.random() * 15) - 7)]
@@ -325,7 +205,7 @@ function createPos() {
 }
 
 /** Generate an evil dot's movement direction based on its spawn position */
-function createMove(pos) {
+function createMove (pos) {
   let possibleMoves = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]]
   if (pos[0] >= 7) {
     possibleMoves = possibleMoves.filter((move) => !(move[0] >= 0))
@@ -343,8 +223,8 @@ function createMove(pos) {
 }
 
 /** Create evil dots */
-function evilDotSpawn() {
-  audioEvilDot()
+function evilDotSpawn () {
+  createAudio(AUDIO_EVIL_DOT_SPAWN).play()
   const evilDot = {}
   if (distEffect) {
     const filter = createNS('filter')
@@ -417,38 +297,38 @@ function evilDotSpawn() {
 }
 
 /** Moves the dot according to the key pressed and the keyboard layout */
-function moveDot(key, layout, dot, dotPos, otherDotPos) {
+function moveDot (key, layout, dot, dotPos, otherDotPos) {
   if (layout.up.includes(key) && dotPos[1] >= -5) {
     if (check2pCollision(dot, dotPos, [0, -1], otherDotPos)) {
-      audioDotMove()
+      createAudio(AUDIO_DOT_MOVE, .25)
       dotPos[1] -= 1
       setTransform(dot, dotPos)
     }
   } else if (layout.down.includes(key) && dotPos[1] <= 5) {
     if (check2pCollision(dot, dotPos, [0, 1], otherDotPos)) {
-      audioDotMove()
+      createAudio(AUDIO_DOT_MOVE, .25)
       dotPos[1] += 1
       setTransform(dot, dotPos)
     }
   } else if (layout.left.includes(key) && dotPos[0] >= -7) {
     if (check2pCollision(dot, dotPos, [-1, 0], otherDotPos)) {
-      audioDotMove()
+      createAudio(AUDIO_DOT_MOVE, .25)
       dotPos[0] -= 1
       setTransform(dot, dotPos)
     }
   } else if (layout.right.includes(key) && dotPos[0] <= 7) {
     if (check2pCollision(dot, dotPos, [1, 0], otherDotPos)) {
-      audioDotMove()
+      createAudio(AUDIO_DOT_MOVE, .25)
       dotPos[0] += 1
       setTransform(dot, dotPos)
     }
   }
 }
 
-function check2pCollision(dotMoving, dotPosMoving, move, dotPosStatic) {
+function check2pCollision (dotMoving, dotPosMoving, move, dotPosStatic) {
   if (!twoPlayers) return true
   if (dotPosMoving[0] + move[0] == dotPosStatic[0] && dotPosMoving[1] + move[1] == dotPosStatic[1]) {
-    audioDotBlocked()
+    createAudio(AUDIO_DOT_BLOCKED).play()
     setTransform(dotMoving, [dotPosMoving[0] + move[0] * .5, dotPosMoving[1] + move[1] * .5])
     setTimeout(() => {
       setTransform(dotMoving, dotPosMoving)
@@ -459,7 +339,7 @@ function check2pCollision(dotMoving, dotPosMoving, move, dotPosStatic) {
 }
 
 /** Moves the evil dots and return the new state */
-function updateEvilDot(evilDots) {
+function updateEvilDot (evilDots) {
   const deadDots = []
   evilDots.forEach(({ node, group, pos, move }, index) => {
     // Remove dots going beyond the game's limits 
@@ -475,7 +355,7 @@ function updateEvilDot(evilDots) {
   return evilDots.filter((_, index) => !deadDots.includes(index))
 }
 
-function resetGame() {
+function resetGame () {
   $('dot-disp-map').setAttribute('scale', 256)
   $('high-score').innerHTML = highScore
   clearTimeout(creationTimeout)
@@ -484,7 +364,6 @@ function resetGame() {
   document.onkeydown = null
 
   setTimeout(() => {
-
     evilDots = []
     currentEvilDotIndex = 1
     timeBetweenSpawns = initTimeBetweenSpawns
@@ -514,7 +393,7 @@ function resetGame() {
   }, 600)
 }
 
-function initialSetup() {
+function initialSetup () {
   $('menu').setAttribute('opacity', 0)
   $('count-down').classList.add('count-down')
   $('dot-disp-map').setAttribute('scale', 256)
@@ -526,20 +405,20 @@ function initialSetup() {
   setTimeout(evilDotSpawn, timeBetweenSpawns)
 }
 
-function launchGame() {
+function launchGame () {
   initialSetup()
   dot1.setAttribute('opacity', 0)
   dot2.setAttribute('opacity', 0)
   document.onkeydown = move
 
-  function move({ key }) {
+  function move ({ key }) {
     moveDot(key, layoutMovement1p, dot, dotPos)
 
     checkCollision()
     checkDistance()
   }
 
-  function checkDistance() {
+  function checkDistance () {
     if (distEffect) {
       evilDots.forEach(({ feDisplacementMap, pos }) => {
         const distance = calcDistance(pos, dotPos)
@@ -548,10 +427,10 @@ function launchGame() {
     }
   }
 
-  function checkCollision() {
+  function checkCollision () {
     if (evilDots.some(({ pos }) => dotPos[0] == pos[0] && dotPos[1] == pos[1])) {
       $('last-score').innerHTML = currentTime
-      audioDeath()
+      createAudio(AUDIO_DEATH).play()
       dot.classList.add('dead')
       resetGame()
     }
@@ -569,12 +448,12 @@ function launchGame() {
   }, 1000)
 }
 
-function launchGame2p() {
+function launchGame2p () {
   initialSetup()
   dot.setAttribute('opacity', 0)
   document.onkeydown = move
 
-  function move({ key }) {
+  function move ({ key }) {
     moveDot(key, layoutMovement2p1, dot1, dot1Pos, dot2Pos)
     moveDot(key, layoutMovement2p2, dot2, dot2Pos, dot1Pos)
 
@@ -582,7 +461,7 @@ function launchGame2p() {
     checkDistance()
   }
 
-  function checkDistance() {
+  function checkDistance () {
     if (distEffect) {
       evilDots.forEach(({ feDisplacementMap, pos }) => {
         const distance1 = !dot1Dead && calcDistance(pos, dot1Pos) || Infinity
@@ -593,12 +472,12 @@ function launchGame2p() {
     }
   }
 
-  function checkCollision() {
-    function killDotIfCollide(dot, dotPos, dotDead, score) {
+  function checkCollision () {
+    function killDotIfCollide (dot, dotPos, dotDead, score) {
       if (!dotDead && evilDots.some(({ pos }) => dotPos[0] == pos[0] && dotPos[1] == pos[1])) {
         $(score).innerHTML = currentTime
         if (!dot1Dead && !dot2Dead) {
-          audioGhost()
+          createAudio(AUDIO_GHOST).play()
         }
         dot.classList.add('dead')
         setTimeout(() => dot.classList.add('ghost'), 100)
@@ -610,7 +489,7 @@ function launchGame2p() {
     dot2Dead = killDotIfCollide(dot2, dot2Pos, dot2Dead, 'p2-score')
 
     if (dot1Dead && dot2Dead) {
-      audioDeath()
+      createAudio(AUDIO_DEATH).play()
       resetGame()
     }
   }
@@ -625,49 +504,6 @@ function launchGame2p() {
     $('count-down').innerHTML = ++currentTime
     if (currentTime > highScore) highScore = currentTime
   }, 1000)
-}
-
-/** Splash screen */
-function endSplashScreen() {
-  $('splash-screen-overlay').remove()
-  $('splash-screen').remove()
-  $('menu-intro-rect').classList.add('menu-intro')
-  audioMainTheme()
-  audioClick()
-  document.onkeydown = menuSelection
-}
-
-/** Audio */
-function audioMainTheme() {
-  audio = new Audio('audio/main-theme.mp3')
-  audio.play()
-  audio.loop = true
-}
-function audioDotMove() {
-  audio = new Audio('audio/dot-move.mp3')
-  audio.play()
-  audio.volume = .25
-}
-function audioDotBlocked() {
-  new Audio('audio/dot-blocked.mp3').play()
-}
-function audioEvilDot() {
-  new Audio('audio/evil-dot-spawn.mp3').play()
-}
-function audioGhost() {
-  new Audio('audio/ghost.mp3').play()
-}
-function audioDeath() {
-  new Audio('audio/death.mp3').play()
-}
-function audioClick() {
-  new Audio('audio/click.mp3').play()
-}
-function audioEscape() {
-  audio = new Audio('audio/death.mp3')
-  audio.play()
-  audio.playbackRate = 3
-  audio.volume = .5
 }
 
 let gamepadIndex
