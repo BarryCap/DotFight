@@ -63,7 +63,7 @@ const menuNavigation = {
 /** Option menu constants */
 const GLOW = 'glow'
 const DIST = 'dist'
-const SOUND = 'sound'
+const SOUND = 'sounds'
 const initOptionSelection = GLOW
 /** Attributes to set when changing options on the menu */
 const optionMenuOptions = {

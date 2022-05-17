@@ -98,7 +98,7 @@ function optionsSelection ({ key }) {
     document.onkeydown = menuSelection
   }
 
-  if (menuMoveXKeys.includes(key)) {
+  if (menuMoveYKeys.includes(key)) {
     createAudio(AUDIO_DOT_MOVE, .25)
     optionSelected = optionMenuNavigation[optionSelected][menuMoveUpKeys.includes(key) ? 'up' : 'down']
     const oS = $('options-selection')
