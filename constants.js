@@ -76,7 +76,6 @@ const optionMenuNavigation = {
   [DIST]: { up: GLOW, down: SOUND },
   [SOUND]: { up: DIST, down: GLOW }
 }
-
 /** Audio constants */
 const AUDIO_MAIN_THEME = 'audio/main-theme.mp3'
 const AUDIO_DOT_MOVE = 'audio/dot-move.mp3'
@@ -85,3 +84,18 @@ const AUDIO_EVIL_DOT_SPAWN = 'audio/evil-dot-spawn.mp3'
 const AUDIO_GHOST = 'audio/ghost.mp3'
 const AUDIO_DEATH = 'audio/death.mp3'
 const AUDIO_CLICK = 'audio/click.mp3'
+
+/** Movement contants */
+const directions = ['up', 'down', 'left', 'right']
+const possibleMoves = {
+  up: [0, -1],
+  down: [0, 1],
+  left: [-1, 0],
+  right: [1, 0],
+}
+const isMoveAllowed = {
+  up: ([, y]) => y >= -5,
+  down: ([, y]) => y <= 5,
+  left: ([x]) => x >= -7,
+  right: ([x]) => x <= 7,
+}
